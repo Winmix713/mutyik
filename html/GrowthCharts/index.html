@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Charts - HTML Verzió</title>
+    <style>
+        /* Alap stílusok és Tailwind 'reset' jellegű beállítások */
+        *, ::before, ::after {
+            box-sizing: border-box;
+            border-width: 0;
+            border-style: solid;
+            border-color: currentColor;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #0f0f0f; /* Sötétebb háttér mint a képen */
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Tailwind osztályok megfelelői */
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+
+        .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+        .from-black\/30 { --tw-gradient-from: rgba(0, 0, 0, 0.3); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(0, 0, 0, 0)); }
+        .to-black\/10 { --tw-gradient-to: rgba(0, 0, 0, 0.1); }
+
+        .backdrop-blur-xl {
+            --tw-backdrop-blur: blur(24px);
+            backdrop-filter: var(--tw-backdrop-blur);
+        }
+        @supports (backdrop-filter: blur(24px)) {
+            .backdrop-blur-xl { backdrop-filter: blur(24px); }
+        }
+
+        .border-0 { border-width: 0px; }
+        .rounded-3xl { border-radius: 1.5rem; }
+        .overflow-hidden { overflow: hidden; }
+
+        .from-white\/\[0\.04\] { --tw-gradient-from: rgba(255, 255, 255, 0.04); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255, 255, 255, 0)); }
+        .to-transparent { --tw-gradient-to: transparent; }
+
+        .p-8 { padding: 2rem; }
+        .grid { display: grid; }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .gap-12 { gap: 3rem; }
+
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-baseline { align-items: baseline; }
+        .justify-between { justify-content: space-between; }
+
+        .bg-black\/40 { background-color: rgba(0, 0, 0, 0.4); }
+        .text-white { color: rgb(255 255 255); }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .rounded-full { border-radius: 9999px; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .inline-self-start { align-self: flex-start; }
+        .mb-8 { margin-bottom: 2rem; }
+
+        .h-40 { height: 10rem; }
+        .w-full { width: 100%; }
+
+        .bg-gradient-to-t { background-image: linear-gradient(to top, var(--tw-gradient-stops)); }
+        .from-black\/20 { --tw-gradient-from: rgba(0, 0, 0, 0.2); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(0, 0, 0, 0)); }
+        .rounded-xl { border-radius: 0.75rem; }
+
+        .mt-4 { margin-top: 1rem; }
+        .text-white\/50 { color: rgba(255, 255, 255, 0.5); }
+
+        .mt-6 { margin-top: 1.5rem; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        .font-light { font-weight: 300; }
+        .text-white\/40 { color: rgba(255, 255, 255, 0.4); }
+        .ml-4 { margin-left: 1rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+
+        /* Egyedi módosítások a kártya stílusához a kép alapján */
+        .card {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: rgba(18, 18, 18, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+<div
+    class="card relative bg-gradient-to-br from-black/30 to-black/10 backdrop-blur-xl border-0 rounded-3xl overflow-hidden"
+    style="box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1), 0 20px 40px -10px rgba(0, 0, 0, 0.5);"
+>
+    <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent"></div>
+    <div class="card-content relative p-8">
+        <div class="grid grid-cols-2 gap-12">
+            <!-- Első oszlop: User Growth -->
+            <div class="flex flex-col">
+                <div
+                  class="bg-black/40 text-white px-4 py-1.5 rounded-full text-sm inline-self-start mb-8"
+                  style="box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.1);"
+                >
+                  48%
+                </div>
+
+                <div class="h-40 relative">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                    <canvas id="areaChart" class="w-full h-40"></canvas>
+                </div>
+
+                <div class="flex justify-between mt-4 text-sm text-white/50">
+                  <span>Apr</span>
+                  <span>May</span>
+                  <span>Jun</span>
+                  <span>Jul</span>
+                </div>
+
+                <div class="flex items-baseline mt-6">
+                  <div
+                    class="text-6xl font-light text-white"
+                    style="text-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                  >48%</div>
+                  <div class="text-xl text-white/40 ml-4">User Growth</div>
+                </div>
+            </div>
+
+            <!-- Második oszlop: User Satisfaction -->
+            <div class="flex flex-col">
+                <div
+                  class="bg-black/40 text-white px-4 py-1.5 rounded-full text-sm inline-self-start mb-8"
+                  style="box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(255, 255, 255, 0.1);"
+                >
+                  56%
+                </div>
+
+                <div class="h-40 relative">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                    <canvas id="barChart" class="w-full h-40"></canvas>
+                </div>
+
+                <div class="flex justify-between mt-4 text-sm text-white/50">
+                  <span>Apr</span>
+                  <span>May</span>
+                  <span>Jun</span>
+                  <span>Jul</span>
+                </div>
+
+                <div class="flex items-baseline mt-6">
+                  <div
+                    class="text-6xl font-light text-white"
+                    style="text-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                  >56%</div>
+                  <div class="text-xl text-white/40 ml-4">User Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // AreaChart implementáció
+    function drawAreaChart() {
+        const canvas = document.getElementById('areaChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        // Set canvas size with higher pixel density
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        
+        // Data from React component
+        const data = [10, 15, 25, 35, 50, 70, 85];
+        const smoothing = 0.3;
+        const showDots = false;
+        
+        if (data.length < 2) return;
+        
+        // Normalize data to fit canvas
+        const maxValue = Math.max(...data);
+        const normalizedData = data.map(value => 1 - (value / maxValue) * 0.8);
+        
+        // Draw path
+        const pointSpacing = rect.width / (data.length - 1);
+        
+        // Create bezier curves
+        ctx.beginPath();
+        ctx.moveTo(0, normalizedData[0] * rect.height);
+        
+        for (let i = 0; i < normalizedData.length - 1; i++) {
+            const x1 = i * pointSpacing;
+            const y1 = normalizedData[i] * rect.height;
+            const x2 = (i + 1) * pointSpacing;
+            const y2 = normalizedData[i + 1] * rect.height;
+            
+            const cpx1 = x1 + (x2 - x1) * smoothing;
+            const cpy1 = y1;
+            const cpx2 = x2 - (x2 - x1) * smoothing;
+            const cpy2 = y2;
+            
+            ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, x2, y2);
+        }
+        
+        // Create the line stroke with gradient matching the image
+        const strokeGradient = ctx.createLinearGradient(0, 0, rect.width, 0);
+        strokeGradient.addColorStop(0, '#FF423D');
+        strokeGradient.addColorStop(0.5, '#FFD600');
+        strokeGradient.addColorStop(1, '#00FFE0');
+        
+        ctx.strokeStyle = strokeGradient;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Create the fill gradient
+        ctx.lineTo(rect.width, rect.height);
+        ctx.lineTo(0, rect.height);
+        ctx.closePath();
+        
+        // Create fill gradient - subtle gradient to match image
+        const fillGradient = ctx.createLinearGradient(rect.width / 2, 0, rect.width / 2, rect.height);
+        fillGradient.addColorStop(0, 'rgba(0, 255, 224, 0.15)');
+        fillGradient.addColorStop(1, 'rgba(0, 255, 224, 0)');
+        
+        ctx.fillStyle = fillGradient;
+        ctx.fill();
+        
+        // Draw dots if needed
+        if (showDots) {
+            for (let i = 0; i < normalizedData.length; i++) {
+                const x = i * pointSpacing;
+                const y = normalizedData[i] * rect.height;
+                
+                // Draw outer glow
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 6);
+                gradient.addColorStop(0, 'rgba(0, 255, 224, 0.7)');
+                gradient.addColorStop(1, 'rgba(0, 255, 224, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw inner dot
+                ctx.fillStyle = '#00FFE0';
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+    }
+
+    // BarChart implementáció
+    function drawBarChart() {
+        const canvas = document.getElementById('barChart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        // Set canvas size with higher pixel density
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        
+        // Data from React component
+        const data = [20, 25, 30, 40, 45, 80, 50];
+        const spacing = 1.2;
+        
+        // Colors matching the image
+        const barColors = [
+            '#1a1a1a', '#1a1a1a', '#1a1a1a', '#1a1a1a', '#1a1a1a', 
+            'gradient', // We'll handle the gold gradient separately
+            '#1a1a1a'
+        ];
+        
+        if (data.length === 0) return;
+        
+        // Normalize data to fit canvas
+        const maxValue = Math.max(...data);
+        const normalizedData = data.map(value => (value / maxValue) * 0.9);
+        
+        // Calculate bar width
+        const barWidth = rect.width / data.length / spacing;
+        const barSpacing = (rect.width - barWidth * data.length) / (data.length + 1);
+        
+        // Draw bars
+        for (let i = 0; i < normalizedData.length; i++) {
+            const height = normalizedData[i] * rect.height;
+            const x = barSpacing + i * (barWidth + barSpacing);
+            const y = rect.height - height;
+            
+            let barColor = barColors[i] || '#1a1a1a';
+            
+            // Draw bar
+            if (barColor === 'gradient') {
+                // Gold gradient for highlighted bar
+                const gradient = ctx.createLinearGradient(x, y, x, rect.height);
+                gradient.addColorStop(0, '#ffd700'); // Top: bright gold
+                gradient.addColorStop(1, '#805b10'); // Bottom: darker gold
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = barColor;
+            }
+            
+            // Draw rounded top rect
+            const radius = barWidth / 2;
+            ctx.beginPath();
+            ctx.moveTo(x, y + radius);
+            ctx.lineTo(x, rect.height);
+            ctx.lineTo(x + barWidth, rect.height);
+            ctx.lineTo(x + barWidth, y + radius);
+            ctx.arc(x + barWidth / 2, y + radius, radius, 0, Math.PI, true);
+            ctx.closePath();
+            ctx.fill();
+        }
+    }
+
+    // Inicializálás és átméretezés kezelése
+    function initCharts() {
+        drawAreaChart();
+        drawBarChart();
+    }
+
+    // Betöltéskor futtatja
+    window.addEventListener('load', initCharts);
+    
+    // Átméretezéskor újrarajzolja a diagramokat
+    window.addEventListener('resize', initCharts);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="payment-tracker-card">
+        <div class="card-overlay"></div>
+        <div class="card-content">
+            <div class="header">
+                <div class="icon-wrapper">
+                    <!-- Lucide CalendarClock SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                        <path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/>
+                        <path d="M16 2v4"/>
+                        <path d="M8 2v4"/>
+                        <path d="M3 10h18"/>
+                        <path d="M17.5 17.5h4V22"/>
+                        <path d="M22 17.5V16a6 6 0 0 0-12 0v1.5"/>
+                    </svg>
+                </div>
+                <div class="header-text">
+                    <h2>Payments</h2>
+                    <p>on Time</p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stats-numbers">
+                    <div class="large-number">24</div>
+                    <div class="total-number">/ 38</div>
+                </div>
+
+                <div class="footer">
+                    <div class="footer-text">Last 5 payments</div>
+                    <div class="dots-container">
+                        <div class="dot dot-active"></div>
+                        <div class="dot dot-active"></div>
+                        <div class="dot dot-active"></div>
+                        <div class="dot dot-active"></div>
+                        <div class="dot dot-inactive"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

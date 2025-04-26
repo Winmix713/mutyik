@@ -1,0 +1,223 @@
+/* Basic Reset & Body Style */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #000;
+    padding: 20px;
+    font-family: sans-serif;
+}
+
+/* Main Container Styles */
+.performance-metrics {
+    background-color: #000;
+    padding: 2rem;
+    width: 100%;
+    max-width: 900px;
+}
+
+/* Grid Container Styles */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+/* Individual Color Item Styles */
+.color-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Circle Container Styles */
+.circle-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+/* Color Button Styles */
+.color-button {
+    position: relative;
+    width: 12rem;
+    height: 12rem;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Default state styles */
+.color-button {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover state styles */
+.color-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Active state styles */
+.color-button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Bottom glow effect */
+.glow-effect.bottom-glow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    opacity: 0.4;
+    transition: opacity 0.3s;
+}
+
+/* Hover glow effect */
+.hover-glow {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.color-button:hover .hover-glow {
+    opacity: 0.4;
+}
+
+.color-button:active .hover-glow {
+    opacity: 0.8;
+}
+
+/* Pulse animation */
+.pulse-animation {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.color-button:hover .pulse-animation {
+    opacity: 0.4;
+    animation: pulse 2s infinite;
+}
+
+/* Press effect */
+.press-effect {
+    position: absolute;
+    inset: 0;
+    background-color: #000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.color-button:active .press-effect {
+    opacity: 0.2;
+}
+
+/* Solid Circle Styles */
+.solid-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.color-button:hover .solid-circle {
+    transform: translate(-50%, -50%) scale(1.2);
+}
+
+.color-button:active .solid-circle {
+    transform: translate(-50%, -50%) scale(0.9);
+}
+
+/* Color Label Styles */
+.color-label {
+    font-size: 1.25rem;
+    color: white;
+    font-family: 'Roboto Mono', monospace;
+    margin-top: 1rem;
+    white-space: nowrap;
+}
+
+/* Set color for each button based on data-color */
+.color-button[data-color="#FFD600"] .solid-circle { background-color: #FFD600; }
+.color-button[data-color="#FFD600"] .glow-effect.bottom-glow { background: radial-gradient(circle at center bottom, #FFD600 0%, transparent 70%); }
+.color-button[data-color="#FFD600"] .hover-glow { background: radial-gradient(circle at center, transparent 40%, #FFD600 100%); filter: blur(8px); }
+.color-button[data-color="#FFD600"] .pulse-animation { background: radial-gradient(circle, transparent 60%, #FFD600 100%); }
+
+.color-button[data-color="#FF423D"] .solid-circle { background-color: #FF423D; }
+.color-button[data-color="#FF423D"] .glow-effect.bottom-glow { background: radial-gradient(circle at center bottom, #FF423D 0%, transparent 70%); }
+.color-button[data-color="#FF423D"] .hover-glow { background: radial-gradient(circle at center, transparent 40%, #FF423D 100%); filter: blur(8px); }
+.color-button[data-color="#FF423D"] .pulse-animation { background: radial-gradient(circle, transparent 60%, #FF423D 100%); }
+
+.color-button[data-color="#8F00FF"] .solid-circle { background-color: #8F00FF; }
+.color-button[data-color="#8F00FF"] .glow-effect.bottom-glow { background: radial-gradient(circle at center bottom, #8F00FF 0%, transparent 70%); }
+.color-button[data-color="#8F00FF"] .hover-glow { background: radial-gradient(circle at center, transparent 40%, #8F00FF 100%); filter: blur(8px); }
+.color-button[data-color="#8F00FF"] .pulse-animation { background: radial-gradient(circle, transparent 60%, #8F00FF 100%); }
+
+.color-button[data-color="#0066FF"] .solid-circle { background-color: #0066FF; }
+.color-button[data-color="#0066FF"] .glow-effect.bottom-glow { background: radial-gradient(circle at center bottom, #0066FF 0%, transparent 70%); }
+.color-button[data-color="#0066FF"] .hover-glow { background: radial-gradient(circle at center, transparent 40%, #0066FF 100%); filter: blur(8px); }
+.color-button[data-color="#0066FF"] .pulse-animation { background: radial-gradient(circle, transparent 60%, #0066FF 100%); }
+
+.color-button[data-color="#00FFE0"] .solid-circle { background-color: #00FFE0; }
+.color-button[data-color="#00FFE0"] .glow-effect.bottom-glow { background: radial-gradient(circle at center bottom, #00FFE0 0%, transparent 70%); }
+.color-button[data-color="#00FFE0"] .hover-glow { background: radial-gradient(circle at center, transparent 40%, #00FFE0 100%); filter: blur(8px); }
+.color-button[data-color="#00FFE0"] .pulse-animation { background: radial-gradient(circle, transparent 60%, #00FFE0 100%); }
+
+.color-button[data-color="#FFFFFF"] .solid-circle { background-color: #FFFFFF; }
+.color-button[data-color="#FFFFFF"] .glow-effect.bottom-glow { background: radial-gradient(circle at center bottom, #FFFFFF 0%, transparent 70%); }
+.color-button[data-color="#FFFFFF"] .hover-glow { background: radial-gradient(circle at center, transparent 40%, #FFFFFF 100%); filter: blur(8px); }
+.color-button[data-color="#FFFFFF"] .pulse-animation { background: radial-gradient(circle, transparent 60%, #FFFFFF 100%); }
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .color-button {
+        width: 9rem;
+        height: 9rem;
+    }
+    
+    .solid-circle {
+        width: 3rem;
+        height: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}

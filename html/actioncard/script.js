@@ -1,0 +1,123 @@
+// Akciók adatai - a React komponenshez hasonlóan
+const actions = [
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-credit-card"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`, 
+    color: '#FFD600',
+    name: 'Cards',
+    description: 'Manage credit cards and payments'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-banknote"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>`, 
+    color: '#00FF94',
+    name: 'Cash',
+    description: 'Track your cash flow and expenses'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><path d="M7 17h10"/><circle cx="7" cy="17" r="2"/><path d="M17 17h2"/><circle cx="17" cy="17" r="2"/></svg>`, 
+    color: '#00FFE0',
+    name: 'Auto',
+    description: 'Vehicle loans and financing'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`, 
+    color: '#0066FF',
+    name: 'Home',
+    description: 'Mortgage and property loans'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wallet"><path d="M21 12V7H5a2 2 0 0 1 0-4h14a2 2 0 0 1 2 2v4Z"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>`, 
+    color: '#8F00FF',
+    name: 'Wallet',
+    description: 'Digital payment solutions'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.084a1 1 0 0 0 0 1.838l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>`, 
+    color: '#FF423D',
+    name: 'Learn',
+    description: 'Financial education resources'
+  }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.action-cards-container');
+    
+    // Létrehozzuk a kártyákat dinamikusan
+    actions.forEach((action, index) => {
+        // Létrehozzuk a wrapper div-et
+        const wrapper = document.createElement('div');
+        wrapper.className = 'action-card-wrapper';
+        
+        // Létrehozzuk a gombot
+        const button = document.createElement('button');
+        button.className = 'action-button';
+        button.style.setProperty('--action-color', action.color);
+        
+        // Hozzáadjuk a glow effekteket és az ikont
+        button.innerHTML = `
+            <div class="glow bottom-glow"></div>
+            <div class="glow hover-glow"></div>
+            <div class="icon-container">
+                ${action.icon}
+            </div>
+            <div class="active-overlay"></div>
+            <div class="pulse-effect"></div>
+        `;
+        
+        // Eseménykezelők hozzáadása
+        button.addEventListener('mouseenter', () => {
+            button.classList.add('hovered');
+        });
+
+        button.addEventListener('mouseleave', () => {
+            button.classList.remove('hovered');
+            button.classList.remove('active');
+        });
+
+        button.addEventListener('mousedown', () => {
+            button.classList.add('active');
+        });
+
+        button.addEventListener('mouseup', () => {
+            button.classList.remove('active');
+        });
+
+        // Érintés események (mobilhoz)
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            button.classList.add('hovered');
+            button.classList.add('active');
+        }, { passive: false });
+
+        button.addEventListener('touchend', () => {
+            setTimeout(() => {
+                button.classList.remove('active');
+                button.classList.remove('hovered');
+            }, 150);
+        });
+
+        // Fókusz események (billentyűzet navigációhoz)
+        button.addEventListener('focus', () => {
+            button.classList.add('hovered');
+        });
+
+        button.addEventListener('blur', () => {
+            button.classList.remove('hovered');
+            button.classList.remove('active');
+        });
+        
+        // Ha a leírást is meg akarjuk jeleníteni
+        // const description = document.createElement('div');
+        // description.className = 'action-description';
+        // description.innerHTML = `
+        //    <h3>${action.name}</h3>
+        //    <p>${action.description}</p>
+        // `;
+        
+        // Összerakjuk a teljes kártyát
+        wrapper.appendChild(button);
+        // wrapper.appendChild(description); // Ha a leírást is meg akarjuk jeleníteni
+        
+        // Hozzáadjuk a konténerhez
+        container.appendChild(wrapper);
+    });
+});

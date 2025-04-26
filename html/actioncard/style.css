@@ -1,0 +1,192 @@
+/* Alap stílusok és változók */
+:root {
+    --action-color: #888; /* Alapértelmezett szín */
+}
+
+body {
+    font-family: sans-serif;
+    background-color: #111; /* Sötét háttér az érvényesüléshez */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Konténer a rácshoz */
+.action-cards-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Tailwind: grid-cols-2 */
+    gap: 24px; /* Tailwind: gap-6 */
+    padding: 16px; /* Tailwind: p-4 */
+    max-width: 400px; /* Opcionális: korlátozza a szélességet */
+}
+
+/* Gomb központosító wrapper */
+.action-card-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; /* Ha a leírást is hozzáadod */
+}
+
+/* Az akciógomb */
+.action-button {
+    --action-color: #888; /* Gomb szintű alapértelmezett szín */
+    position: relative;
+    width: 128px; /* Tailwind: w-32 */
+    height: 128px; /* Tailwind: h-32 */
+    border-radius: 50%; /* Tailwind: rounded-full */
+    background-color: #000; /* Tailwind: bg-black */
+    border: none;
+    cursor: pointer; /* Tailwind: cursor-pointer */
+    overflow: hidden; /* Tailwind: overflow-hidden */
+    outline: none; /* Tailwind: outline-none */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Alap árnyék */
+    color: var(--action-color); /* Ikon színét beállítja */
+}
+
+/* Hover állapot */
+.action-button.hovered {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 25px hsla(from var(--action-color) h s l / 0.4); /* 40% opacity */
+}
+
+/* Aktív (lenyomott) állapot */
+.action-button.active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px hsla(from var(--action-color) h s l / 0.6); /* 60% opacity */
+}
+
+/* Glow effektek alap stílusa */
+.glow {
+    position: absolute;
+    left: 0;
+    right: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Ne zavarja a kattintást */
+}
+
+/* Alsó glow */
+.bottom-glow {
+    bottom: 0;
+    height: 64px; /* Tailwind: h-16 */
+    background: radial-gradient(circle at center bottom, var(--action-color) 0%, transparent 70%);
+    filter: blur(10px);
+    opacity: 0.4;
+}
+.action-button.hovered .bottom-glow {
+    opacity: 0.6;
+}
+.action-button.active .bottom-glow {
+    opacity: 0.7;
+}
+
+/* Teljes hover glow */
+.hover-glow {
+    top: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, transparent 40%, hsla(from var(--action-color) h s l / 0.3) 100%); /* 30% opacity */
+    filter: blur(8px);
+    opacity: 0; /* Alapból rejtett */
+}
+.action-button.hovered .hover-glow {
+    opacity: 0.4;
+}
+.action-button.active .hover-glow {
+    opacity: 0.8;
+}
+
+/* Ikon konténer */
+.icon-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    transform: scale(1); /* Alap méret */
+    z-index: 1; /* Glow fölött legyen */
+}
+
+.icon-container svg {
+    width: 24px; /* Tailwind: w-6 */
+    height: 24px; /* Tailwind: h-6 */
+    stroke: currentColor; /* Használja a gomb 'color' értékét */
+    filter: drop-shadow(0 0 8px hsla(from var(--action-color) h s l / 0.7)); /* 70% opacity */
+}
+
+.action-button.hovered .icon-container {
+    transform: scale(1.2);
+}
+.action-button.active .icon-container {
+    transform: scale(0.9);
+}
+
+/* Aktív lenyomás overlay */
+.active-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    opacity: 0; /* Alapból rejtett */
+    transition: opacity 0.1s ease; /* Gyorsabb átmenet */
+    z-index: 2; /* Legyen felül */
+    pointer-events: none;
+}
+
+.action-button.active .active-overlay {
+    opacity: 0.2; /* Tailwind: opacity-20 */
+}
+
+/* Pulzáló effekt */
+.pulse-effect {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, transparent 60%, hsla(from var(--action-color) h s l / 0.2) 100%); /* 20% opacity */
+    opacity: 0;
+    animation: pulse 2s infinite;
+    pointer-events: none;
+    z-index: 0; /* Legyen leghátul */
+}
+
+.action-button.hovered:not(.active) .pulse-effect {
+    opacity: 0.4; /* Kezdő opacity az animációhoz */
+}
+
+/* Pulzálás animáció */
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { opacity: 0.4; }
+}
+
+/* Opcionális: Leírás stílusai (ha visszakapcsolod a HTML-ben) */
+/*
+.action-description {
+    color: #ccc;
+    text-align: center;
+    margin-top: 8px;
+    max-width: 128px;
+}
+.action-description h3 {
+    font-size: 1rem;
+    margin: 0 0 4px 0;
+    font-weight: bold;
+}
+.action-description p {
+    font-size: 0.8rem;
+    margin: 0;
+    color: #999;
+}
+*/

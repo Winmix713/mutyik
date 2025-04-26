@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Action Cards</title>
+    <style>
+        /* Alap stílusok és változók */
+        :root {
+            --action-color: #888; /* Alapértelmezett szín */
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #000; /* Teljesen fekete háttér, mint a képen */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Konténer a rácshoz */
+        .action-cards-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            padding: 16px;
+            max-width: 400px;
+        }
+
+        /* Gomb központosító wrapper */
+        .action-card-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Az akciógomb */
+        .action-button {
+            --action-color: #888; /* Gomb szintű alapértelmezett szín */
+            position: relative;
+            width: 128px;
+            height: 128px;
+            border-radius: 50%;
+            background-color: #111; /* Kicsit világosabb, mint a háttér */
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+            outline: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            color: var(--action-color);
+        }
+
+        /* Hover állapot */
+        .action-button.hovered {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), 0 0 25px hsla(from var(--action-color) h s l / 0.4);
+        }
+
+        /* Aktív (lenyomott) állapot */
+        .action-button.active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px hsla(from var(--action-color) h s l / 0.6);
+        }
+
+        /* Glow effektek alap stílusa */
+        .glow {
+            position: absolute;
+            left: 0;
+            right: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* Alsó glow - ezt állítottam be úgy, hogy hasonlítson a képre */
+        .bottom-glow {
+            bottom: 0;
+            height: 64px;
+            background: radial-gradient(circle at center bottom, var(--action-color) 0%, transparent 70%);
+            filter: blur(10px);
+            opacity: 0.6; /* Erősebb alapértelmezett fény, mint az eredeti */
+        }
+        .action-button.hovered .bottom-glow {
+            opacity: 0.8;
+        }
+        .action-button.active .bottom-glow {
+            opacity: 0.9;
+        }
+
+        /* Teljes hover glow */
+        .hover-glow {
+            top: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 40%, hsla(from var(--action-color) h s l / 0.3) 100%);
+            filter: blur(8px);
+            opacity: 0.2; /* Alapból már látható fény */
+        }
+        .action-button.hovered .hover-glow {
+            opacity: 0.4;
+        }
+        .action-button.active .hover-glow {
+            opacity: 0.8;
+        }
+
+        /* Ikon konténer - nagyobb ikonok, mint az eredetiben */
+        .icon-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+            transform: scale(1);
+            z-index: 1;
+        }
+
+        .icon-container svg {
+            width: 40px; /* Nagyobb ikonok, mint az eredetiben */
+            height: 40px;
+            stroke: currentColor;
+            fill: currentColor; /* Fill hozzáadása a teli színekhez */
+            filter: drop-shadow(0 0 8px hsla(from var(--action-color) h s l / 0.7));
+        }
+
+        .action-button.hovered .icon-container {
+            transform: scale(1.2);
+        }
+        .action-button.active .icon-container {
+            transform: scale(0.9);
+        }
+
+        /* Aktív lenyomás overlay */
+        .active-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: black;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .action-button.active .active-overlay {
+            opacity: 0.2;
+        }
+
+        /* Pulzáló effekt */
+        .pulse-effect {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, transparent 60%, hsla(from var(--action-color) h s l / 0.2) 100%);
+            opacity: 0;
+            animation: pulse 2s infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .action-button.hovered:not(.active) .pulse-effect {
+            opacity: 0.4;
+        }
+
+        /* Pulzálás animáció */
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="action-cards-container">
+    <!-- A kártyákat dinamikusan generáljuk a JavaScript-ben -->
+</div>
+
+<script>
+// Akciók adatai a képhez igazítva - módosított SVG ikonok, hogy hasonlítsanak a képre
+const actions = [
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect width="18" height="12" x="3" y="6" rx="2" />
+      <line x1="3" x2="21" y1="10" y2="10" stroke="currentColor" stroke-width="2" />
+    </svg>`, 
+    color: '#FFD600', // Sárga kártya
+    name: 'Cards',
+    description: 'Manage credit cards and payments'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect width="18" height="10" x="3" y="7" rx="2" />
+      <text x="12" y="14.5" font-family="sans-serif" font-size="8" text-anchor="middle" fill="black">$</text>
+    </svg>`, 
+    color: '#00FF94', // Zöld bankjegy
+    name: 'Cash',
+    description: 'Track your cash flow and expenses'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" fill="currentColor" />
+      <circle cx="8" cy="17" r="2.5" fill="currentColor" />
+      <circle cx="16" cy="17" r="2.5" fill="currentColor" />
+      <circle cx="12" cy="14" r="3" fill="#000" />
+      <text x="12" y="16.5" font-family="sans-serif" font-size="5" text-anchor="middle" fill="currentColor">$</text>
+    </svg>`, 
+    color: '#00FFE0', // Türkiz autó
+    name: 'Auto',
+    description: 'Vehicle loans and financing'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <text x="12" y="18" font-family="sans-serif" font-size="8" text-anchor="middle" fill="black">%</text>
+    </svg>`, 
+    color: '#0066FF', // Kék ház
+    name: 'Home',
+    description: 'Mortgage and property loans'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect width="18" height="12" x="3" y="6" rx="2" />
+      <circle cx="6" cy="12" r="1.5" fill="black" />
+    </svg>`, 
+    color: '#8F00FF', // Lila pénztárca
+    name: 'Wallet',
+    description: 'Digital payment solutions'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.084a1 1 0 0 0 0 1.838l8.57 3.908a2 2 0 0 0 1.66 0z" />
+      <text x="12" y="16" font-family="sans-serif" font-size="8" text-anchor="middle" fill="black">$</text>
+    </svg>`, 
+    color: '#FF423D', // Piros diploma
+    name: 'Learn',
+    description: 'Financial education resources'
+  }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.action-cards-container');
+    
+    // Létrehozzuk a kártyákat dinamikusan
+    actions.forEach((action, index) => {
+        // Létrehozzuk a wrapper div-et
+        const wrapper = document.createElement('div');
+        wrapper.className = 'action-card-wrapper';
+        
+        // Létrehozzuk a gombot
+        const button = document.createElement('button');
+        button.className = 'action-button';
+        button.style.setProperty('--action-color', action.color);
+        
+        // Hozzáadjuk a glow effekteket és az ikont
+        button.innerHTML = `
+            <div class="glow bottom-glow"></div>
+            <div class="glow hover-glow"></div>
+            <div class="icon-container">
+                ${action.icon}
+            </div>
+            <div class="active-overlay"></div>
+            <div class="pulse-effect"></div>
+        `;
+        
+        // Eseménykezelők hozzáadása
+        button.addEventListener('mouseenter', () => {
+            button.classList.add('hovered');
+        });
+
+        button.addEventListener('mouseleave', () => {
+            button.classList.remove('hovered');
+            button.classList.remove('active');
+        });
+
+        button.addEventListener('mousedown', () => {
+            button.classList.add('active');
+        });
+
+        button.addEventListener('mouseup', () => {
+            button.classList.remove('active');
+        });
+
+        // Érintés események (mobilhoz)
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            button.classList.add('hovered');
+            button.classList.add('active');
+        }, { passive: false });
+
+        button.addEventListener('touchend', () => {
+            setTimeout(() => {
+                button.classList.remove('active');
+                button.classList.remove('hovered');
+            }, 150);
+        });
+
+        // Fókusz események (billentyűzet navigációhoz)
+        button.addEventListener('focus', () => {
+            button.classList.add('hovered');
+        });
+
+        button.addEventListener('blur', () => {
+            button.classList.remove('hovered');
+            button.classList.remove('active');
+        });
+        
+        // Összerakjuk a teljes kártyát
+        wrapper.appendChild(button);
+        
+        // Hozzáadjuk a konténerhez
+        container.appendChild(wrapper);
+    });
+
+    // Alap állapotban az első gombot kiemeljük a jobb láthatóság érdekében
+    const firstButton = document.querySelector('.action-button');
+    if (firstButton) {
+        firstButton.classList.add('hovered');
+    }
+});
+</script>
+
+</body>
+</html>

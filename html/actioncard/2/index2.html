@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Action Cards - Professional Edition</title>
+    <style>
+        /* Base styles and variables */
+        :root {
+            --action-color: #888; /* Default color */
+            --bg-color: #000;
+            --button-bg: #111;
+            --button-bg-hover: #181818;
+            --glow-opacity: 0.6;
+            --glow-opacity-hover: 0.8;
+            --glow-opacity-active: 1.0;
+            --icon-scale: 1;
+            --icon-scale-hover: 1.15;
+            --icon-scale-active: 0.92;
+            --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --transition-snap: cubic-bezier(0.22, 0.68, 0, 1.71);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Container for the grid */
+        .action-cards-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            padding: 24px;
+            max-width: 460px;
+            margin: 0 auto;
+        }
+
+        /* Button centering wrapper */
+        .action-card-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Action button styling */
+        .action-button {
+            --action-color: #888; /* Button-level default color */
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-color: var(--button-bg);
+            border: none;
+            cursor: pointer;
+            overflow: visible;
+            outline: none;
+            transition: 
+                transform 0.25s var(--transition-bounce),
+                background-color 0.3s ease,
+                box-shadow 0.3s ease;
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.5),
+                0 2px 5px rgba(0, 0, 0, 0.3);
+            color: var(--action-color);
+            will-change: transform, box-shadow;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Label styling */
+        .action-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: opacity 0.3s ease, transform 0.3s var(--transition-bounce);
+            pointer-events: none;
+        }
+
+        .action-button.hovered + .action-label {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hover state */
+        .action-button.hovered {
+            transform: scale(1.08);
+            background-color: var(--button-bg-hover);
+            /* Stronger, colorized outer shadow/glow */
+            box-shadow: 
+                0 12px 28px rgba(0, 0, 0, 0.4),
+                0 0 35px hsla(from var(--action-color) h s l / 0.35),
+                0 0 10px hsla(from var(--action-color) h s l / 0.15);
+        }
+
+        /* Active (pressed) state */
+        .action-button.active {
+            transform: scale(0.96);
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.5),
+                0 0 40px hsla(from var(--action-color) h s l / 0.6);
+            transition-duration: 0.1s;
+        }
+
+        /* --- Glow Effects --- */
+
+        /* Base glow (ambient) */
+        .glow-base {
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at center, 
+                transparent 60%, 
+                hsla(from var(--action-color) h s l / 0.15) 100%
+            );
+            filter: blur(15px);
+            opacity: 0.5;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Hover glow */
+        .glow-hover {
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            background: 
+                radial-gradient(
+                    circle at center, 
+                    hsla(from var(--action-color) h s l / 0.4) 0%, 
+                    transparent 70%
+                ),
+                radial-gradient(
+                    circle at center, 
+                    hsla(from var(--action-color) h s l / 0.2) 40%, 
+                    transparent 90%
+                );
+            filter: blur(18px);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: 
+                opacity 0.3s ease, 
+                transform 0.3s var(--transition-bounce);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Bottom glow */
+        .bottom-glow {
+            position: absolute;
+            bottom: -10px;
+            left: 10px;
+            right: 10px;
+            height: 80px;
+            background: radial-gradient(
+                ellipse at center bottom, 
+                hsla(from var(--action-color) h s l / 0.7) 0%, 
+                transparent 80%
+            );
+            filter: blur(15px);
+            opacity: var(--glow-opacity);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            z-index: 0;
+            transform-origin: center bottom;
+        }
+
+        .action-button.hovered .glow-base {
+            opacity: 0.3;
+        }
+        
+        .action-button.hovered .bottom-glow {
+            opacity: var(--glow-opacity-hover);
+            transform: scaleY(1.1);
+        }
+        
+        .action-button.hovered .glow-hover {
+            opacity: var(--glow-opacity-hover);
+            transform: scale(1.1);
+        }
+        
+        .action-button.active .glow-hover {
+            opacity: var(--glow-opacity-active);
+            transform: scale(1.2);
+            filter: blur(25px);
+            transition-duration: 0.1s;
+        }
+        
+        .action-button.active .bottom-glow {
+            opacity: var(--glow-opacity-active);
+            transform: scaleY(1.2);
+            transition-duration: 0.1s;
+        }
+
+        /* Active flash effect */
+        .active-flash {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at center, 
+                white 0%, 
+                hsla(from var(--action-color) h s l / 0.7) 30%, 
+                transparent 70%
+            );
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .action-button.active .active-flash {
+            opacity: 0.7;
+            transform: scale(1);
+            transition-duration: 0.08s;
+        }
+
+        /* Icon container */
+        .icon-container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s var(--transition-bounce);
+            will-change: transform;
+        }
+
+        .icon-container svg {
+            width: 48px;
+            height: 48px;
+            stroke: currentColor;
+            fill: currentColor;
+            filter: drop-shadow(0 3px 6px hsla(from var(--action-color) h s l / 0.5));
+            transition: filter 0.3s ease, transform 0.2s ease;
+        }
+
+        .action-button.hovered .icon-container {
+            transform: scale(var(--icon-scale-hover)) rotate(-3deg);
+        }
+        
+        .action-button.hovered .icon-container svg {
+            filter: drop-shadow(0 5px 12px hsla(from var(--action-color) h s l / 0.7));
+        }
+
+        .action-button.active .icon-container {
+            transform: scale(var(--icon-scale-active)) rotate(3deg);
+            transition-duration: 0.1s;
+        }
+        
+        .action-button.active .icon-container svg {
+            filter: drop-shadow(0 2px 4px hsla(from var(--action-color) h s l / 0.4));
+            transition-duration: 0.1s;
+        }
+
+        /* Pulse animation */
+        @keyframes pulse {
+            0% { transform: scale(0.98); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(0.98); opacity: 0.5; }
+        }
+
+        .pulse-ring {
+            position: absolute;
+            inset: -5px;
+            border: 2px solid hsla(from var(--action-color) h s l / 0.2);
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .action-button.hovered .pulse-ring {
+            opacity: 1;
+            animation: pulse 2.5s infinite;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .action-cards-container {
+                gap: 24px;
+                padding: 20px;
+            }
+            
+            .action-button {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .icon-container svg {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .action-label {
+                font-size: 12px;
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="action-cards-container">
+    <!-- Cards will be dynamically generated by JavaScript -->
+</div>
+
+<script>
+// Action data
+const actions = [
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect width="18" height="12" x="3" y="6" rx="2" />
+      <line x1="3" x2="21" y1="10" y2="10" stroke="black" stroke-width="2" />
+      <circle cx="6" cy="14" r="1" fill="black" />
+    </svg>`, 
+    color: '#FFD600', // Yellow card
+    name: 'Cards',
+    description: 'Manage credit cards and payments'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect width="18" height="10" x="3" y="7" rx="2" />
+      <text x="12" y="14.5" font-family="sans-serif" font-size="8" text-anchor="middle" fill="black">$</text>
+    </svg>`, 
+    color: '#00FF94', // Green cash
+    name: 'Cash',
+    description: 'Track your cash flow and expenses'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+      <circle cx="8" cy="17" r="2.5" />
+      <circle cx="16" cy="17" r="2.5" />
+      <circle cx="12" cy="14" r="3" fill="#000" />
+      <text x="12" y="16.5" font-family="sans-serif" font-size="5" text-anchor="middle" fill="currentColor">$</text>
+    </svg>`, 
+    color: '#00FFE0', // Teal auto
+    name: 'Auto',
+    description: 'Vehicle loans and financing'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <text x="12" y="18" font-family="sans-serif" font-size="8" text-anchor="middle" fill="black">%</text>
+    </svg>`, 
+    color: '#0066FF', // Blue house
+    name: 'Home',
+    description: 'Mortgage and property loans'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <rect width="18" height="12" x="3" y="6" rx="2" />
+      <circle cx="6" cy="12" r="1.5" fill="black" />
+      <path d="M14 11.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5z" fill="black" />
+    </svg>`, 
+    color: '#8F00FF', // Purple wallet
+    name: 'Wallet',
+    description: 'Digital payment solutions'
+  },
+  { 
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.084a1 1 0 0 0 0 1.838l8.57 3.908a2 2 0 0 0 1.66 0z" />
+      <text x="12" y="16" font-family="sans-serif" font-size="8" text-anchor="middle" fill="black">$</text>
+    </svg>`, 
+    color: '#FF423D', // Red learn
+    name: 'Learn',
+    description: 'Financial education resources'
+  }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.action-cards-container');
+    
+    // Create cards dynamically
+    actions.forEach((action, index) => {
+        // Create wrapper div
+        const wrapper = document.createElement('div');
+        wrapper.className = 'action-card-wrapper';
+        
+        // Create button
+        const button = document.createElement('button');
+        button.className = 'action-button';
+        button.style.setProperty('--action-color', action.color);
+        button.setAttribute('aria-label', action.name);
+        button.setAttribute('title', action.description);
+        
+        // Add glow effects and icon
+        button.innerHTML = `
+            <div class="glow-base"></div>
+            <div class="glow-hover"></div>
+            <div class="bottom-glow"></div>
+            <div class="pulse-ring"></div>
+            <div class="icon-container">
+                ${action.icon}
+            </div>
+            <div class="active-flash"></div>
+        `;
+        
+        // Create label
+        const label = document.createElement('div');
+        label.className = 'action-label';
+        label.textContent = action.name;
+        
+        // Track interaction states
+        let isActive = false;
+        let touchStartTime = 0;
+        
+        // Mouse events
+        button.addEventListener('mouseenter', () => {
+            if (!isActive) {
+                button.classList.add('hovered');
+            }
+        });
+
+        button.addEventListener('mouseleave', () => {
+            button.classList.remove('hovered');
+            // Important: Don't remove 'active' here
+        });
+
+        button.addEventListener('mousedown', () => {
+            isActive = true;
+            button.classList.add('active');
+            button.classList.remove('hovered');
+        });
+
+        button.addEventListener('mouseup', () => {
+            if (isActive) {
+                isActive = false;
+                button.classList.remove('active');
+                
+                // Restore hover if mouse is still over the button
+                if (button.matches(':hover')) {
+                    button.classList.add('hovered');
+                }
+            }
+        });
+
+        // Ensure we don't get stuck in active state if mouse is released outside
+        document.addEventListener('mouseup', () => {
+            if (isActive) {
+                isActive = false;
+                button.classList.remove('active');
+            }
+        });
+
+        // Touch events (mobile)
+        button.addEventListener('touchstart', (e) => {
+            touchStartTime = Date.now();
+            isActive = true;
+            button.classList.add('active');
+            button.classList.remove('hovered');
+        }, { passive: true });
+
+        button.addEventListener('touchend', (e) => {
+            const touchDuration = Date.now() - touchStartTime;
+            
+            // Delay removal of active state for visual feedback
+            setTimeout(() => {
+                if (isActive) {
+                    isActive = false;
+                    button.classList.remove('active');
+                }
+            }, Math.min(100, touchDuration)); // Adjust timing based on touch duration
+        });
+
+        // Keyboard accessibility
+        button.addEventListener('focus', () => {
+            if (!isActive) {
+                button.classList.add('hovered');
+            }
+        });
+
+        button.addEventListener('blur', () => {
+            button.classList.remove('hovered');
+        });
+
+        button.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                isActive = true;
+                button.classList.add('active');
+                button.classList.remove('hovered');
+            }
+        });
+
+        button.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (isActive) {
+                    isActive = false;
+                    button.classList.remove('active');
+                    button.classList.add('hovered');
+                    
+                    // Trigger action (could be a click or custom function)
+                    console.log(`${action.name} activated via keyboard`);
+                }
+            }
+        });
+        
+        // Add animation delay for staggered entrance
+        button.style.animationDelay = `${index * 0.1}s`;
+        
+        // Add elements to the DOM
+        wrapper.appendChild(button);
+        wrapper.appendChild(label);
+        container.appendChild(wrapper);
+    });
+});
+</script>
+
+</body>
+</html>

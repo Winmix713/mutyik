@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="card timeline-card">
+        <!-- Card Header -->
+        <div class="card-header">
+            <h2 class="timeline-title">Timeline</h2>
+            <div class="header-tabs">
+                <button class="header-tab active">Details</button>
+                <button class="header-tab">Updates</button>
+            </div>
+        </div>
+
+        <!-- Card Content -->
+        <div class="card-content">
+            <!-- Tabs Component Simulation -->
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <!-- Tabs List -->
+                    <div class="tabs-list">
+                        <button class="tab-trigger active" data-value="2023">2023</button>
+                        <button class="tab-trigger" data-value="2024">2024</button>
+                    </div>
+                    <!-- First Payment Info -->
+                    <div class="first-payment-info">
+                        <span>First Payment</span>
+                        <span>03.02.2023</span>
+                    </div>
+                </div>
+
+                <!-- Tabs Content Area -->
+                <div class="tabs-content-area">
+                    <!-- 2023 Content (Initially Visible) -->
+                    <div class="tab-content active" data-value="2023">
+                        <div class="month-grid">
+                            <!-- Jan (Special Unpaid) -->
+                            <div class="month-item">
+                                <span class="month-name">Jan</span>
+                                <div class="status-box pending">
+                                    <div class="status-indicator pending"></div>
+                                </div>
+                            </div>
+                            <!-- Feb (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Feb</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Mar (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Mar</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Apr (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Apr</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- May (Unpaid) -->
+                            <div class="month-item">
+                                <span class="month-name">May</span>
+                                <div class="status-box unpaid">
+                                    <div class="status-indicator unpaid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Jun (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Jun</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="month-grid second-row">
+                            <!-- Jul (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Jul</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Aug (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Aug</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Sep (Unpaid) -->
+                            <div class="month-item">
+                                <span class="month-name">Sep</span>
+                                <div class="status-box unpaid">
+                                    <div class="status-indicator unpaid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Oct (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Oct</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Nov (Paid) -->
+                            <div class="month-item">
+                                <span class="month-name">Nov</span>
+                                <div class="status-box paid">
+                                    <div class="status-indicator paid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Dec (Unpaid) -->
+                            <div class="month-item">
+                                <span class="month-name">Dec</span>
+                                <div class="status-box unpaid">
+                                    <div class="status-indicator unpaid">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2024 Content (Initially Hidden) -->
+                    <div class="tab-content" data-value="2024">
+                        <div class="month-grid">
+                            <!-- Jan to Jun 2024 (All Pending) -->
+                            <div class="month-item">
+                                <span class="month-name">Jan</span>
+                                <div class="status-box pending">
+                                    <div class="status-indicator pending"></div>
+                                </div>
+                            </div>
+                            <div class="month-item">
+                                <span class="month-name">Feb</span>
+                                <div class="status-box pending">
+                                    <div class="status-indicator pending"></div>
+                                </div>
+                            </div>
+                            <div class="month-item">
+                                <span class="month-name">Mar</span>
+                                <div class="status-box pending">
+                                    <div class="status-indicator pending"></div>
+                                </div>
+                            </div>
+                            <div class="month-item">
+                                <span class="month-name">Apr</span>
+                                <div class="status-box pending">
+                                    <div class="status-indicator pending"></div>
+                                </div>
+                            </div>
+                            <div class="month-item">
+                                <span class="month-name">May</span>
+                                <div class="status-box pending">
+                                    <div class="status-indicator pending"></div>
+                                </div>
+                            </div>
+                            <div class="month-item">
+                                <span class="month-name">Jun</span>
+                                <div class="status-box pending">
+                                    <div class="status-indicator pending"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-button primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="button-icon">
+                        <rect width="20" height="14" x="2" y="5" rx="2"/>
+                        <line x1="2" x2="22" y1="10" y2="10"/>
+                    </svg>
+                    Make a payment
+                </button>
+                <button class="action-button secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="button-icon">
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                        <path d="M12 9v4"/>
+                        <path d="M12 17h.01"/>
+                    </svg>
+                    Create Dispute
+                </button>
+                <button class="action-button secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="button-icon">
+                        <rect width="16" height="20" x="4" y="2" rx="2"/>
+                        <line x1="8" x2="16" y1="6" y2="6"/>
+                        <line x1="16" x2="16" y1="14" y2="18"/>
+                        <line x1="16" x2="16" y1="10" y2="10"/>
+                        <line x1="12" x2="12" y1="10" y2="10"/>
+                        <line x1="8" x2="8" y1="10" y2="10"/>
+                        <line x1="12" x2="12" y1="14" y2="14"/>
+                        <line x1="8" x2="8" y1="14" y2="14"/>
+                        <line x1="12" x2="12" y1="18" y2="18"/>
+                        <line x1="8" x2="8" y1="18" y2="18"/>
+                    </svg>
+                    Calculate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple tab functionality
+        document.querySelectorAll('.tab-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                // Update trigger styling
+                document.querySelectorAll('.tab-trigger').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding content
+                const value = this.getAttribute('data-value');
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                    if (content.getAttribute('data-value') === value) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        // Header tabs
+        document.querySelectorAll('.header-tab').forEach((tab, index) => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.header-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

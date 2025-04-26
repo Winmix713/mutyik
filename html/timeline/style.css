@@ -1,0 +1,266 @@
+/* Basic Reset & Body Style */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #000; /* Black background */
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+    color: #cbd5e1;
+}
+
+/* Card Styles */
+.card.timeline-card {
+    background-image: linear-gradient(to bottom right, #0f172a, #1e3a8a); /* Darker gradient from React code */
+    border: 0;
+    overflow: hidden;
+    border-radius: 2rem; /* More rounded corners */
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); /* Stronger shadow */
+}
+
+/* Card Header */
+.card-header {
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1.5rem;
+}
+
+.timeline-title {
+    font-size: 2.5rem; /* Larger font size */
+    font-weight: 400;
+    color: white;
+}
+
+.header-tabs {
+    display: flex;
+    gap: 3rem;
+    font-size: 1.125rem;
+}
+
+.header-tab {
+    background: none;
+    border: none;
+    padding: 0;
+    padding-bottom: 0.5rem;
+    cursor: pointer;
+    transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    font-size: inherit;
+}
+
+.header-tab.active {
+    border-bottom: 2px solid #475569;
+    color: #94a3b8;
+}
+
+.header-tab:not(.active) {
+    border-bottom: 0;
+    color: #475569;
+}
+
+/* Card Content */
+.card-content {
+    padding: 2rem;
+}
+
+/* Tabs Simulation */
+.tabs-container {
+    width: 100%;
+}
+
+.tabs-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.tabs-list {
+    background-color: transparent;
+    padding: 0;
+    height: auto;
+    display: flex;
+}
+
+.tab-trigger {
+    background: none;
+    border: none;
+    font-size: 3rem;
+    font-weight: 400;
+    padding: 0 0.25rem;
+    height: auto;
+    cursor: pointer;
+    color: #475569;
+    line-height: 1;
+}
+
+.tab-trigger:not(:first-child) {
+    margin-left: 1rem;
+}
+
+.tab-trigger.active {
+    color: white;
+}
+
+.first-payment-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 1.125rem;
+    line-height: 1.4;
+}
+
+.first-payment-info span:first-child {
+    color: #94a3b8;
+}
+
+.first-payment-info span:last-child {
+    color: white;
+}
+
+/* Tab Content Styling */
+.tab-content {
+    display: none;
+    margin: 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Month Grid */
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+}
+
+.month-grid.second-row {
+    margin-top: 2rem;
+}
+
+.month-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.month-name {
+    font-size: 1.125rem;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+}
+
+.status-box {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 1rem; /* More rounded corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: rgba(30, 41, 59, 0.7); /* Semi-transparent background */
+}
+
+/* Status Box Variations */
+.status-box.paid {
+    border: 1px solid #22c55e; /* Green border */
+}
+
+.status-box.unpaid {
+    border: 1px solid #ef4444; /* Red border */
+}
+
+.status-box.pending {
+    background-color: rgba(51, 65, 85, 0.5); /* Darker background */
+    border: 0;
+}
+
+/* Status Icons/Dot */
+.status-indicator {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-indicator.paid {
+    background-color: #10b981; /* Bright green background */
+}
+
+.status-indicator.unpaid {
+    background-color: #ef4444; /* Bright red background */
+}
+
+.status-indicator.pending {
+    width: 1rem;
+    height: 1rem;
+    background-color: #475569;
+    border-radius: 50%;
+}
+
+.status-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: white; /* White icon */
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 4rem;
+}
+
+.action-button {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border-radius: 9999px;
+    border: none;
+    font-size: 1.125rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+    font-weight: 500;
+}
+
+.action-button.primary {
+    background-color: white;
+    color: black;
+}
+.action-button.primary:hover {
+    background-color: #f1f5f9;
+}
+
+.action-button.secondary {
+    background-color: rgba(51, 65, 85, 0.5);
+    color: white;
+}
+.action-button.secondary:hover {
+    background-color: rgba(71, 85, 105, 0.5);
+}
+
+.button-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    stroke: currentColor;
+}
