@@ -1,0 +1,1809 @@
+//components/FormTable.tsx
+
+"import { memo } from 'react';
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
+import type { TeamForm } from '../types';
+
+interface FormTableProps {
+  teamForms: TeamForm[];
+  className?: string;
+}
+
+const FORM_COLORS = {
+  W: 'bg-emerald-500 hover:bg-emerald-600',
+  D: 'bg-amber-500 hover:bg-amber-600',
+  L: 'bg-rose-500 hover:bg-rose-600',
+} as const;
+
+const FormResult = memo(({ result }: { result: string }) => (
+  <span
+    className={`w-6 h-6 flex items-center justify-center text-xs font-semibold text-white rounded transition-colors ${
+      FORM_COLORS[result as keyof typeof FORM_COLORS] ?? 'bg-gray-500 hover:bg-gray-600'
+    }`}
+    title={
+      result === 'W'
+        ? 'Win'
+        : result === 'D'
+        ? 'Draw'
+        : result === 'L'
+        ? 'Loss'
+        : 'Unknown'
+    }
+  >
+    {result}
+  </span>
+));
+
+FormResult.displayName = 'FormResult';
+
+const TableHeader = memo(
+  ({ label, align = 'left' }: { label: string; align?: 'left' | 'center' }) => (
+    <th
+      className={`p-4 text-white font-bold text-xs tracking-wider ${
+        align === 'center' ? 'text-center' : 'text-left'
+      }`}
+      scope="col"
+    >
+      {label}
+    </th>
+  ),
+);
+
+TableHeader.displayName = 'TableHeader';
+
+const PositionIndicator = memo(({ position, prevPosition }: { position: number; prevPosition?: number }) => {
+  if (!prevPosition) return <span>{position}</span>;
+  
+  const diff = prevPosition - position;
+  if (diff === 0) return (
+    <span className="flex items-center gap-1">
+      {position} <Minus className="w-3 h-3 text-gray-400" />
+    </span>
+  );
+  
+  return (
+    <span className="flex items-center gap-1">
+      {position}
+      {diff > 0 ? (
+        <ArrowUp className="w-3 h-3 text-emerald-500" />
+      ) : (
+        <ArrowDown className="w-3 h-3 text-rose-500" />
+      )}
+    </span>
+  );
+});
+
+PositionIndicator.displayName = 'PositionIndicator';
+
+export const FormTable = memo(({ teamForms = [], className = '' }: FormTableProps) => {
+  if (teamForms.length === 0) {
+    return (
+      <div className="text-white/80 text-center p-4 bg-white/5 rounded-lg">
+        No form data available.
+      </div>
+    );
+  }
+
+  return (
+    <div className={className}>
+      <h3 className="text-2xl font-bold text-[#CCFF00] mb-6 flex items-center">
+        League Table
+        <span className="text-sm font-normal text-white/60 ml-2">
+          Last updated: {new Date().toLocaleDateString()}
+        </span>
+      </h3>
+      <div className="overflow-x-auto rounded-lg bg-[#111111]/30 backdrop-blur-sm">
+        <table className="w-full border-collapse" role="table">
+          <thead>
+            <tr className="border-b border-white/10">
+              <TableHeader label="Pos" />
+              <TableHeader label="Team" />
+              <TableHeader label="P" align="center" />
+              <TableHeader label="GF" align="center" />
+              <TableHeader label="GA" align="center" />
+              <TableHeader label="GD" align="center" />
+              <TableHeader label="Pts" align="center" />
+              <TableHeader label="Form" align="center" />
+            </tr>
+          </thead>
+          <tbody>
+            {teamForms.map((team, index) => (
+              <tr
+                key={`${team.team}-${index}`}
+                className="border-b border-white/5 transition-all duration-300 hover:bg-white/10"
+              >
+                <td className="p-4 text-white/90 font-bold text-xs">
+                  <PositionIndicator 
+                    position={team.position} 
+                    prevPosition={index > 0 ? teamForms[index - 1].position : undefined}
+                  />
+                </td>
+                <td className="p-4 text-white/90 font-bold text-xs">{team.team}</td>
+                <td className="p-4 text-white/90 font-bold text-xs text-center">{team.played}</td>
+                <td className="p-4 text-white/90 font-bold text-xs text-center">{team.goalsFor}</td>
+                <td className="p-4 text-white/90 font-bold text-xs text-center">{team.goalsAgainst}</td>
+                <td className="p-4 text-white/90 font-bold text-xs text-center">
+                  <span
+                    className={
+                      team.goalsFor - team.goalsAgainst > 0
+                        ? 'text-emerald-400'
+                        : team.goalsFor - team.goalsAgainst < 0
+                        ? 'text-rose-400'
+                        : ''
+                    }
+                  >
+                    {team.goalsFor - team.goalsAgainst}
+                  </span>
+                </td>
+                <td className="p-4 text-white/90 font-bold text-xs text-center">{team.points}</td>
+                <td className="p-4 text-white/90 font-bold text-xs">
+                  <div className="flex justify-center gap-1.5">
+                    {team.form.split('').map((result, i) => (
+                      <FormResult key={i} result={result} />
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+});
+
+FormTable.displayName = 'FormTable';"
+
+
+//components/Header.tsx
+
+"import { memo } from 'react';
+import { Trophy, BarChart3, ChevronDown } from 'lucide-react';
+
+interface HeaderProps {
+  currentSeason?: string;
+  className?: string;
+}
+
+const BRAND_COLOR = '#CCFF00';
+
+const Logo = memo(() => (
+  <div className="flex items-center gap-3 group">
+    <Trophy 
+      size={32} 
+      className="text-[#CCFF00] transition-transform duration-300 group-hover:scale-110" 
+      aria-hidden="true"
+    />
+    <div>
+      <h1 className="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90">
+        Soccer Championship Analysis
+      </h1>
+      <p className="text-xs text-white/60 hidden md:block">
+        Professional Soccer Statistics & Analysis
+      </p>
+    </div>
+  </div>
+));
+
+Logo.displayName = 'Logo';
+
+const SeasonIndicator = memo(({ season }: { season: string }) => (
+  <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors duration-200 cursor-pointer">
+      <BarChart3 
+        size={20} 
+        className="text-[#CCFF00]" 
+        aria-hidden="true"
+      />
+      <span className="font-medium">Season {season}</span>
+      <ChevronDown 
+        size={16} 
+        className="text-white/60" 
+        aria-hidden="true"
+      />
+    </div>
+  </div>
+));
+
+SeasonIndicator.displayName = 'SeasonIndicator';
+
+export const Header = memo(({ currentSeason = "2024", className = '' }: HeaderProps) => {
+  return (
+    <header 
+      className={`
+        bg-[#111111]/80 backdrop-blur-md border-b border-white/10 
+        text-white shadow-lg sticky top-0 z-50 
+        transition-all duration-300 ease-in-out
+        ${className}
+      `}
+    >
+      <nav 
+        className="container mx-auto px-4 md:px-6 py-4"
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <Logo />
+          <SeasonIndicator season={currentSeason} />
+        </div>
+      </nav>
+    </header>
+  );
+});
+
+Header.displayName = 'Header';"
+
+
+//components/LeagueDetails.tsx
+
+"import { useState, useCallback, useMemo, useRef, useEffect, memo } from 'react';
+import { ArrowLeft, Save, Edit, Upload, AlertCircle } from 'lucide-react';
+import Papa from 'papaparse';
+import type { Match, LeagueData } from '../types';
+import { MatchesTable } from './MatchesTable';
+import { StandingsTable } from './StandingsTable';
+import { FormTable } from './FormTable';
+import { calculateStandings, calculateTeamForms } from '../utils/calculations';
+
+interface LeagueDetailsProps {
+  league: LeagueData;
+  matches: Match[];
+  onBack: () => void;
+  onUpdateLeague: (updatedLeague: LeagueData) => void;
+  onUpdateMatches: (matches: Match[]) => void;
+}
+
+const DEFAULT_LEAGUE: LeagueData = {
+  id: '',
+  name: '',
+  season: '',
+  winner: '',
+  secondPlace: '',
+  thirdPlace: '',
+  status: 'In Progress',
+};
+
+type TabType = 'matches' | 'standings' | 'form';
+
+interface TabButtonProps {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+const TabButton = memo(({ active, onClick, children }: TabButtonProps) => (
+  <button
+    onClick={onClick}
+    className={`
+      px-4 py-2 rounded-md font-medium transition-all duration-200
+      ${active 
+        ? 'bg-[#CCFF00] text-black shadow-lg scale-105' 
+        : 'bg-white/5 text-white/80 hover:bg-white/10 hover:text-white'}
+    `}
+  >
+    {children}
+  </button>
+));
+
+TabButton.displayName = 'TabButton';
+
+const EditForm = memo(({ 
+  editedLeague, 
+  onInputChange, 
+  onFileUpload, 
+  onTriggerFileUpload, 
+  fileInputRef, 
+  dataLoaded,
+  onSave,
+  isSaveDisabled 
+}: {
+  editedLeague: LeagueData;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onTriggerFileUpload: () => void;
+  fileInputRef: React.RefObject<HTMLInputElement>;
+  dataLoaded: boolean;
+  onSave: () => void;
+  isSaveDisabled: boolean;
+}) => (
+  <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 space-y-6 border border-white/10">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label htmlFor="leagueName" className="block text-sm font-medium text-white/80 mb-2">
+          League Name
+        </label>
+        <input
+          type="text"
+          id="leagueName"
+          name="name"
+          value={editedLeague.name}
+          onChange={onInputChange}
+          className="w-full bg-black/20 text-white border border-white/10 rounded-lg px-4 py-2.5 
+                   focus:outline-none focus:ring-2 focus:ring-[#CCFF00] focus:border-transparent
+                   transition-all duration-200"
+          placeholder="Enter league name"
+        />
+      </div>
+      <div>
+        <label htmlFor="leagueSeason" className="block text-sm font-medium text-white/80 mb-2">
+          Season
+        </label>
+        <input
+          type="text"
+          id="leagueSeason"
+          name="season"
+          value={editedLeague.season}
+          onChange={onInputChange}
+          className="w-full bg-black/20 text-white border border-white/10 rounded-lg px-4 py-2.5 
+                   focus:outline-none focus:ring-2 focus:ring-[#CCFF00] focus:border-transparent
+                   transition-all duration-200"
+          placeholder="Enter season (e.g., 2023-24)"
+        />
+      </div>
+    </div>
+    
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="w-full sm:w-auto flex-grow">
+        <label htmlFor="csv-upload" className="block text-sm font-medium text-white/80 mb-2">
+          Upload Matches Data (CSV)
+        </label>
+        <input
+          ref={fileInputRef}
+          id="csv-upload"
+          type="file"
+          accept=".csv"
+          onChange={onFileUpload}
+          className="hidden"
+        />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onTriggerFileUpload}
+            className="bg-[#CCFF00] text-black hover:bg-[#CCFF00]/90 transition-all duration-200 
+                     px-4 py-2.5 rounded-lg flex items-center gap-2 font-medium"
+          >
+            <Upload className="w-4 h-4" />
+            Choose CSV File
+          </button>
+          <span className={`text-sm ${dataLoaded ? 'text-emerald-400' : 'text-white/60'}`}>
+            {dataLoaded ? '✓ Data loaded successfully' : 'No file chosen'}
+          </span>
+        </div>
+      </div>
+      
+      <button
+        onClick={onSave}
+        disabled={isSaveDisabled}
+        className={`
+          px-6 py-2.5 rounded-lg flex items-center gap-2 font-medium transition-all duration-200
+          ${isSaveDisabled 
+            ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+            : 'bg-[#CCFF00] text-black hover:bg-[#CCFF00]/90'}
+        `}
+      >
+        <Save className="w-4 h-4" />
+        Save Changes
+      </button>
+    </div>
+  </div>
+));
+
+EditForm.displayName = 'EditForm';
+
+export const LeagueDetails = memo(({
+  league = DEFAULT_LEAGUE,
+  matches = [],
+  onBack,
+  onUpdateLeague,
+  onUpdateMatches,
+}: LeagueDetailsProps) => {
+  const [activeTab, setActiveTab] = useState<TabType>('matches');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedLeague, setEditedLeague] = useState(league);
+  const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const standings = useMemo(() => calculateStandings(matches), [matches]);
+  const teamForms = useMemo(() => calculateTeamForms(matches), [matches]);
+
+  useEffect(() => {
+    loadLeagueData();
+  }, []);
+
+  const loadLeagueData = useCallback(() => {
+    if (league.id) {
+      try {
+        const savedData = localStorage.getItem(`league_${league.id}`);
+        if (savedData) {
+          const parsedData = JSON.parse(savedData);
+          onUpdateMatches(parsedData.matches);
+          setDataLoaded(true);
+          setIsSaveDisabled(true);
+        }
+      } catch (error) {
+        console.error('Error loading league data:', error);
+      }
+    }
+  }, [league.id, onUpdateMatches]);
+
+  const handleSave = useCallback(() => {
+    try {
+      onUpdateLeague(editedLeague);
+      setIsEditing(false);
+      setIsSaveDisabled(true);
+
+      if (league.id) {
+        const leagueData = { matches, standings, teamForms };
+        localStorage.setItem(`league_${league.id}`, JSON.stringify(leagueData));
+      }
+    } catch (error) {
+      console.error('Error saving league data:', error);
+      alert('Failed to save league data. Please try again.');
+    }
+  }, [editedLeague, onUpdateLeague, league.id, matches, standings, teamForms]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditedLeague(prev => ({ ...prev, [name]: value }));
+    setIsSaveDisabled(false);
+  }, []);
+
+  const handleFileUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !league.id) return;
+
+    Papa.parse<Match>(file, {
+      header: true,
+      complete: (result) => {
+        const parsedMatches = result.data
+          .filter((match): match is Match => (
+            match.date !== undefined &&
+            match.home_team !== undefined &&
+            match.away_team !== undefined &&
+            match.ht_home_score !== undefined &&
+            match.ht_away_score !== undefined &&
+            match.home_score !== undefined &&
+            match.away_score !== undefined
+          ))
+          .map(match => ({
+            ...match,
+            ht_home_score: Number(match.ht_home_score),
+            ht_away_score: Number(match.ht_away_score),
+            home_score: Number(match.home_score),
+            away_score: Number(match.away_score),
+            round: match.round || 'Unknown',
+          }));
+
+        if (parsedMatches.length === 0) {
+          alert('No valid matches found in the CSV file. Please check the format and try again.');
+          return;
+        }
+
+        onUpdateMatches(parsedMatches);
+        setDataLoaded(true);
+        setIsSaveDisabled(false);
+
+        const updatedLeagueData = {
+          matches: parsedMatches,
+          standings: calculateStandings(parsedMatches),
+          teamForms: calculateTeamForms(parsedMatches),
+        };
+        localStorage.setItem(`league_${league.id}`, JSON.stringify(updatedLeagueData));
+      },
+      error: (error) => {
+        console.error('Error parsing CSV:', error);
+        alert('Failed to parse CSV file. Please check the format and try again.');
+      },
+    });
+  }, [onUpdateMatches, league.id]);
+
+  const triggerFileUpload = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  return (
+    <div className="space-y-6 animate-fadeIn">
+      <div className="flex items-center justify-between">
+        <button 
+          onClick={onBack}
+          className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-white/90 
+                   transition-all duration-200 flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Leagues
+        </button>
+        <button
+          onClick={() => setIsEditing(prev => !prev)}
+          className="bg-[#CCFF00] text-black hover:bg-[#CCFF00]/90 transition-all duration-200 
+                   px-4 py-2 rounded-lg flex items-center gap-2 font-medium"
+        >
+          {isEditing ? <Save className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
+          {isEditing ? 'Save' : 'Edit League'}
+        </button>
+      </div>
+
+      {isEditing && (
+        <EditForm
+          editedLeague={editedLeague}
+          onInputChange={handleInputChange}
+          onFileUpload={handleFileUpload}
+          onTriggerFileUpload={triggerFileUpload}
+          fileInputRef={fileInputRef}
+          dataLoaded={dataLoaded}
+          onSave={handleSave}
+          isSaveDisabled={isSaveDisabled}
+        />
+      )}
+
+      <div className="flex space-x-4">
+        <TabButton 
+          active={activeTab === 'matches'} 
+          onClick={() => setActiveTab('matches')}
+        >
+          Matches
+        </TabButton>
+        <TabButton 
+          active={activeTab === 'standings'} 
+          onClick={() => setActiveTab('standings')}
+        >
+          Standings
+        </TabButton>
+        <TabButton 
+          active={activeTab === 'form'} 
+          onClick={() => setActiveTab('form')}
+        >
+          Form
+        </TabButton>
+      </div>
+
+      <div className="transition-all duration-300">
+        {activeTab === 'matches' && <MatchesTable matches={matches} />}
+        {activeTab === 'standings' && <StandingsTable standings={standings} />}
+        {activeTab === 'form' && <FormTable teamForms={teamForms} />}
+      </div>
+    </div>
+  );
+});
+
+LeagueDetails.displayName = 'LeagueDetails';"
+
+
+
+
+//components/LeagueTable.tsx
+
+"import { memo } from 'react';
+import { Search, Plus, Eye, Edit2, CheckCircle, Trash2, Trophy } from 'lucide-react';
+import type { LeagueData } from '../types';
+
+interface LeagueTableProps {
+  leagues: LeagueData[];
+  onLeagueAction: (leagueId: string, action: 'view' | 'edit' | 'complete' | 'delete') => void;
+  onSearch: (term: string) => void;
+  onNewLeague: () => void;
+}
+
+interface ActionButtonProps {
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  variant: 'blue' | 'yellow' | 'green' | 'red';
+}
+
+const ActionButton = memo(({ onClick, icon, label, variant }: ActionButtonProps) => {
+  const colors = {
+    blue: 'text-blue-400 hover:bg-blue-500/20',
+    yellow: 'text-yellow-400 hover:bg-yellow-500/20',
+    green: 'text-green-400 hover:bg-green-500/20',
+    red: 'text-red-400 hover:bg-red-500/20',
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`p-1.5 rounded-full transition-all duration-200 ${colors[variant]}`}
+      aria-label={label}
+    >
+      {icon}
+    </button>
+  );
+});
+
+ActionButton.displayName = 'ActionButton';
+
+const SearchBar = memo(({ onSearch }: { onSearch: (term: string) => void }) => (
+  <div className="relative w-full sm:w-80">
+    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+    <input
+      type="text"
+      placeholder="Search seasons..."
+      onChange={(e) => onSearch(e.target.value)}
+      className="w-full bg-black/20 text-white border border-white/10 rounded-lg pl-10 pr-4 py-2.5
+                focus:outline-none focus:ring-2 focus:ring-[#CCFF00] focus:border-transparent
+                transition-all duration-200 placeholder:text-white/40"
+      aria-label="Search seasons"
+    />
+  </div>
+));
+
+SearchBar.displayName = 'SearchBar';
+
+const StatusBadge = memo(({ status }: { status: string }) => (
+  <span
+    className={`
+      px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1.5
+      ${status === 'In Progress'
+        ? 'bg-emerald-500/20 text-emerald-400'
+        : 'bg-blue-500/20 text-blue-400'
+      } backdrop-blur-sm
+    `}
+  >
+    {status === 'In Progress' ? (
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+      </span>
+    ) : (
+      <Trophy className="w-3.5 h-3.5" />
+    )}
+    {status}
+  </span>
+));
+
+StatusBadge.displayName = 'StatusBadge';
+
+const TableHeader = memo(({ children }: { children: React.ReactNode }) => (
+  <th scope="col" className="p-4 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+    {children}
+  </th>
+));
+
+TableHeader.displayName = 'TableHeader';
+
+const TableCell = memo(({ children }: { children: React.ReactNode }) => (
+  <td className="p-4 whitespace-nowrap text-sm text-white/80">
+    {children}
+  </td>
+));
+
+TableCell.displayName = 'TableCell';
+
+export const LeagueTable = memo(({ 
+  leagues, 
+  onLeagueAction, 
+  onSearch, 
+  onNewLeague 
+}: LeagueTableProps) => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <SearchBar onSearch={onSearch} />
+          <button
+            onClick={onNewLeague}
+            className="bg-[#CCFF00] text-black hover:bg-[#CCFF00]/90 transition-all duration-200 
+                     px-6 py-2.5 rounded-lg flex items-center gap-2 w-full sm:w-auto justify-center
+                     font-medium shadow-lg hover:shadow-[#CCFF00]/25 hover:scale-105"
+          >
+            <Plus className="w-4 h-4" />
+            New League
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-[#111111]/30 
+                          backdrop-blur-xl backdrop-saturate-150 
+                          shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
+              <table className="min-w-full divide-y divide-white/5">
+                <thead>
+                  <tr className="bg-[#111111]/30 backdrop-blur-sm">
+                    <TableHeader>Season</TableHeader>
+                    <TableHeader>Winner</TableHeader>
+                    <TableHeader>Second Place</TableHeader>
+                    <TableHeader>Third Place</TableHeader>
+                    <TableHeader>Status</TableHeader>
+                    <th scope="col" className="p-4 text-right text-xs font-medium text-white/80 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {leagues.map((league) => (
+                    <tr 
+                      key={league.id} 
+                      className="transition-all duration-300 hover:bg-white/10 group"
+                    >
+                      <TableCell>{league.season}</TableCell>
+                      <TableCell>{league.winner || '—'}</TableCell>
+                      <TableCell>{league.secondPlace || '—'}</TableCell>
+                      <TableCell>{league.thirdPlace || '—'}</TableCell>
+                      <TableCell>
+                        <StatusBadge status={league.status} />
+                      </TableCell>
+                      <td className="p-4 whitespace-nowrap text-sm text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                          <ActionButton
+                            onClick={() => onLeagueAction(league.id, 'view')}
+                            icon={<Eye className="w-4 h-4" />}
+                            label={`View ${league.season}`}
+                            variant="blue"
+                          />
+                          <ActionButton
+                            onClick={() => onLeagueAction(league.id, 'edit')}
+                            icon={<Edit2 className="w-4 h-4" />}
+                            label={`Edit ${league.season}`}
+                            variant="yellow"
+                          />
+                          {league.status === 'In Progress' && (
+                            <ActionButton
+                              onClick={() => onLeagueAction(league.id, 'complete')}
+                              icon={<CheckCircle className="w-4 h-4" />}
+                              label={`Complete ${league.season}`}
+                              variant="green"
+                            />
+                          )}
+                          <ActionButton
+                            onClick={() => onLeagueAction(league.id, 'delete')}
+                            icon={<Trash2 className="w-4 h-4" />}
+                            label={`Delete ${league.season}`}
+                            variant="red"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {leagues.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-white/60">
+                        <div className="flex flex-col items-center gap-2">
+                          <Trophy className="w-8 h-8 text-white/20" />
+                          <p>No leagues found. Create your first league to get started!</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+LeagueTable.displayName = 'LeagueTable';"
+
+
+//components/MatchesTable.tsx
+
+"import { memo, useMemo, useState } from 'react';
+import { Calendar, ChevronDown, Trophy, AlertCircle } from 'lucide-react';
+import type { Match } from '../types';
+
+interface MatchesTableProps {
+  matches: Match[];
+}
+
+interface MatchScoreProps {
+  homeScore: number;
+  awayScore: number;
+  isHalfTime?: boolean;
+}
+
+const MatchScore = memo(({ homeScore, awayScore, isHalfTime }: MatchScoreProps) => {
+  const scoreClass = useMemo(() => {
+    if (isHalfTime) return 'text-white/60';
+    if (homeScore > awayScore) return 'text-emerald-400';
+    if (homeScore < awayScore) return 'text-rose-400';
+    return 'text-amber-400';
+  }, [homeScore, awayScore, isHalfTime]);
+
+  return (
+    <span className={`font-mono font-bold ${scoreClass}`}>
+      {homeScore} - {awayScore}
+    </span>
+  );
+});
+
+MatchScore.displayName = 'MatchScore';
+
+const ViewTypeSelect = memo(({ 
+  value, 
+  onChange 
+}: { 
+  value: 'rounds' | 'all';
+  onChange: (value: 'rounds' | 'all') => void;
+}) => (
+  <div className="relative">
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value as 'rounds' | 'all')}
+      className="appearance-none bg-black/20 text-white border border-white/10 rounded-lg pl-4 pr-10 py-2.5
+                focus:outline-none focus:ring-2 focus:ring-[#CCFF00] focus:border-transparent
+                transition-all duration-200"
+    >
+      <option value="rounds">View by Rounds</option>
+      <option value="all">View All Matches</option>
+    </select>
+    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+  </div>
+));
+
+ViewTypeSelect.displayName = 'ViewTypeSelect';
+
+const TableHeader = memo(({ children, center }: { children: React.ReactNode; center?: boolean }) => (
+  <th className={`p-4 text-white/80 font-medium text-xs tracking-wider uppercase ${center ? 'text-center' : 'text-left'}`}>
+    {children}
+  </th>
+));
+
+TableHeader.displayName = 'TableHeader';
+
+const RoundHeader = memo(({ round }: { round: string }) => (
+  <div className="flex items-center gap-2 mb-3 bg-white/5 rounded-lg p-3">
+    <Trophy className="w-4 h-4 text-[#CCFF00]" />
+    <h4 className="text-lg font-medium text-white">Round {round}</h4>
+  </div>
+));
+
+RoundHeader.displayName = 'RoundHeader';
+
+export const MatchesTable = memo(({ matches = [] }: MatchesTableProps) => {
+  const [viewType, setViewType] = useState<'rounds' | 'all'>('rounds');
+
+  const matchesByRound = useMemo(() => {
+    return matches.reduce((acc, match) => {
+      const round = match.round || 'Unknown';
+      if (!acc[round]) {
+        acc[round] = [];
+      }
+      acc[round].push(match);
+      return acc;
+    }, {} as Record<string, Match[]>);
+  }, [matches]);
+
+  if (matches.length === 0) {
+    return (
+      <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 text-center border border-white/10">
+        <div className="flex flex-col items-center gap-3">
+          <AlertCircle className="w-8 h-8 text-white/20" />
+          <p className="text-white/60">No matches available for this league yet.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Calendar className="w-5 h-5 text-[#CCFF00]" />
+          <h3 className="text-2xl font-bold text-white">Match Schedule</h3>
+        </div>
+        <ViewTypeSelect value={viewType} onChange={setViewType} />
+      </div>
+
+      <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 overflow-hidden">
+        {viewType === 'rounds' ? (
+          <div className="divide-y divide-white/10">
+            {Object.entries(matchesByRound).map(([round, roundMatches]) => (
+              <div key={round} className="p-4">
+                <RoundHeader round={round} />
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-black/20">
+                        <TableHeader>Date</TableHeader>
+                        <TableHeader>Home Team</TableHeader>
+                        <TableHeader>Away Team</TableHeader>
+                        <TableHeader center>HT</TableHeader>
+                        <TableHeader center>FT</TableHeader>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {roundMatches.map((match, index) => (
+                        <tr 
+                          key={`${match.home_team}-${match.away_team}-${index}`}
+                          className="transition-all duration-300 hover:bg-white/5"
+                        >
+                          <td className="p-4 text-sm text-white/80">{match.date}</td>
+                          <td className="p-4 text-sm font-medium text-white/90">{match.home_team}</td>
+                          <td className="p-4 text-sm font-medium text-white/90">{match.away_team}</td>
+                          <td className="p-4 text-sm text-center">
+                            <MatchScore 
+                              homeScore={match.ht_home_score} 
+                              awayScore={match.ht_away_score} 
+                              isHalfTime 
+                            />
+                          </td>
+                          <td className="p-4 text-sm text-center">
+                            <MatchScore 
+                              homeScore={match.home_score} 
+                              awayScore={match.away_score} 
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-black/20">
+                  <TableHeader>Round</TableHeader>
+                  <TableHeader>Date</TableHeader>
+                  <TableHeader>Home Team</TableHeader>
+                  <TableHeader>Away Team</TableHeader>
+                  <TableHeader center>HT</TableHeader>
+                  <TableHeader center>FT</TableHeader>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {matches.map((match, index) => (
+                  <tr 
+                    key={`${match.home_team}-${match.away_team}-${index}`}
+                    className="transition-all duration-300 hover:bg-white/5"
+                  >
+                    <td className="p-4 text-sm text-white/80">{match.round}</td>
+                    <td className="p-4 text-sm text-white/80">{match.date}</td>
+                    <td className="p-4 text-sm font-medium text-white/90">{match.home_team}</td>
+                    <td className="p-4 text-sm font-medium text-white/90">{match.away_team}</td>
+                    <td className="p-4 text-sm text-center">
+                      <MatchScore 
+                        homeScore={match.ht_home_score} 
+                        awayScore={match.ht_away_score} 
+                        isHalfTime 
+                      />
+                    </td>
+                    <td className="p-4 text-sm text-center">
+                      <MatchScore 
+                        homeScore={match.home_score} 
+                        awayScore={match.away_score} 
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
+MatchesTable.displayName = 'MatchesTable';"
+
+
+//components/NewLeagueModal.tsx
+
+"import { useCallback, useState } from "react"
+import { Plus } from "lucide-react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+
+const formSchema = z.object({
+  leagueId: z
+    .string()
+    .min(3, "League ID must be at least 3 characters")
+    .max(50, "League ID must be less than 50 characters")
+    .regex(/^[a-zA-Z0-9-_]+$/, "League ID can only contain letters, numbers, hyphens, and underscores")
+    .trim(),
+})
+
+type FormValues = z.infer<typeof formSchema>
+
+interface NewLeagueModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onCreateLeague: (leagueId: string) => Promise<void>
+}
+
+export function NewLeagueModal({ isOpen, onClose, onCreateLeague }: NewLeagueModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      leagueId: "",
+    },
+  })
+
+  const handleSubmit = useCallback(
+    async (values: FormValues) => {
+      try {
+        setIsSubmitting(true)
+        await onCreateLeague(values.leagueId)
+        form.reset()
+        onClose()
+      } catch (error) {
+        form.setError("leagueId", {
+          type: "manual",
+          message: error instanceof Error ? error.message : "Failed to create league",
+        })
+      } finally {
+        setIsSubmitting(false)
+      }
+    },
+    [onCreateLeague, onClose, form]
+  )
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold tracking-tight">
+            Create New League
+          </DialogTitle>
+          <DialogDescription>
+            Enter the ID for the new league. The name will be automatically generated.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="leagueId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>League ID</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Enter league ID..."
+                      disabled={isSubmitting}
+                      className="font-mono"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex gap-3 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Create League
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}"
+
+//components/StandingsTable.tsx
+
+"import { useMemo } from "react"
+import { Medal, TrendingDown, TrendingUp } from "lucide-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
+
+export interface StandingsEntry {
+  position: number
+  team: string
+  played: number
+  won: number
+  drawn: number
+  lost: number
+  goalsFor: number
+  goalsAgainst: number
+  goalDifference: number
+  points: number
+  form?: ("W" | "D" | "L")[]
+  previousPosition?: number
+}
+
+interface StandingsTableProps {
+  standings: StandingsEntry[]
+  className?: string
+}
+
+const COLUMNS = [
+  { key: "position", label: "Pos", align: "left" as const },
+  { key: "team", label: "Team", align: "left" as const },
+  { key: "played", label: "P", align: "center" as const },
+  { key: "won", label: "W", align: "center" as const },
+  { key: "drawn", label: "D", align: "center" as const },
+  { key: "lost", label: "L", align: "center" as const },
+  { key: "goalsFor", label: "GF", align: "center" as const },
+  { key: "goalsAgainst", label: "GA", align: "center" as const },
+  { key: "goalDifference", label: "GD", align: "center" as const },
+  { key: "points", label: "Pts", align: "center" as const },
+] as const
+
+export function StandingsTable({ standings = [], className }: StandingsTableProps) {
+  const zones = useMemo(() => {
+    if (standings.length === 0) return null
+    return {
+      champions: standings.length >= 1 ? 1 : 0,
+      championsLeague: standings.length >= 4 ? 4 : 0,
+      europaLeague: standings.length >= 6 ? 6 : 0,
+      relegation: standings.length >= 3 ? standings.length - 3 : 0,
+    }
+  }, [standings])
+
+  if (standings.length === 0) {
+    return (
+      <Card className={cn("animate-in fade-in-50", className)}>
+        <CardHeader>
+          <CardTitle>Standings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">No standings available.</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card className={cn("animate-in fade-in-50", className)}>
+      <CardHeader>
+        <CardTitle>Standings</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {COLUMNS.map((column) => (
+                  <TableHead
+                    key={column.key}
+                    className={cn(
+                      "h-10 px-4 text-xs font-semibold",
+                      column.align === "center" && "text-center"
+                    )}
+                  >
+                    {column.label}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {standings.map((entry, index) => {
+                const positionChange = entry.previousPosition
+                  ? entry.previousPosition - entry.position
+                  : 0
+
+                return (
+                  <TableRow
+                    key={entry.team}
+                    className={cn(
+                      "group transition-colors hover:bg-muted/50",
+                      zones?.champions === entry.position && "bg-yellow-500/5",
+                      zones?.championsLeague >= entry.position && "bg-blue-500/5",
+                      zones?.europaLeague >= entry.position && "bg-orange-500/5",
+                      entry.position > (zones?.relegation || 0) && "bg-red-500/5"
+                    )}
+                  >
+                    <TableCell className="relative px-4 py-3 font-medium">
+                      <div className="flex items-center gap-2">
+                        <span>{entry.position}</span>
+                        {positionChange !== 0 && (
+                          <span
+                            className={cn(
+                              "text-xs",
+                              positionChange > 0 && "text-green-500",
+                              positionChange < 0 && "text-red-500"
+                            )}
+                          >
+                            {positionChange > 0 ? (
+                              <TrendingUp className="h-3 w-3" />
+                            ) : (
+                              <TrendingDown className="h-3 w-3" />
+                            )}
+                          </span>
+                        )}
+                        {zones?.champions === entry.position && (
+                          <Medal className="h-3 w-3 text-yellow-500" />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 font-medium">
+                      {entry.team}
+                      {entry.form && (
+                        <div className="mt-1 flex gap-0.5">
+                          {entry.form.map((result, i) => (
+                            <span
+                              key={i}
+                              className={cn(
+                                "inline-flex h-1.5 w-1.5 rounded-full",
+                                result === "W" && "bg-green-500",
+                                result === "D" && "bg-yellow-500",
+                                result === "L" && "bg-red-500"
+                              )}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-center">
+                      {entry.played}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-center text-green-500">
+                      {entry.won}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-center text-yellow-500">
+                      {entry.drawn}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-center text-red-500">
+                      {entry.lost}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-center">
+                      {entry.goalsFor}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-center">
+                      {entry.goalsAgainst}
+                    </TableCell>
+                    <TableCell
+                      className={cn(
+                        "px-4 py-3 text-center",
+                        entry.goalDifference > 0 && "text-green-500",
+                        entry.goalDifference < 0 && "text-red-500"
+                      )}
+                    >
+                      {entry.goalDifference > 0 && "+"}
+                      {entry.goalDifference}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-center font-bold">
+                      {entry.points}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}"
+
+
+
+//utils/calculations.ts
+
+"import { z } from "zod"
+
+export const matchSchema = z.object({
+  home_team: z.string(),
+  away_team: z.string(),
+  home_score: z.number().int().min(0),
+  away_score: z.number().int().min(0),
+})
+
+export type Match = z.infer<typeof matchSchema>
+
+export interface StandingsEntry {
+  position: number
+  team: string
+  played: number
+  won: number
+  drawn: number
+  lost: number
+  goalsFor: number
+  goalsAgainst: number
+  goalDifference: number
+  points: number
+  form: Array<"W" | "D" | "L">
+  previousPosition?: number
+}
+
+export interface TeamForm {
+  position: number
+  team: string
+  played: number
+  goalsFor: number
+  goalsAgainst: number
+  points: number
+  form: Array<"W" | "D" | "L">
+}
+
+interface TeamStats extends Omit<StandingsEntry, "position" | "previousPosition"> {}
+
+const createInitialTeamStats = (team: string): TeamStats => ({
+  team,
+  played: 0,
+  won: 0,
+  drawn: 0,
+  lost: 0,
+  goalsFor: 0,
+  goalsAgainst: 0,
+  goalDifference: 0,
+  points: 0,
+  form: [],
+})
+
+const MAX_FORM_ENTRIES = 5
+
+export class LeagueStatsCalculator {
+  private teamStats: Map<string, TeamStats>
+
+  constructor(private matches: Match[]) {
+    this.teamStats = new Map()
+    this.processMatches()
+  }
+
+  private ensureTeamExists(team: string): void {
+    if (!this.teamStats.has(team)) {
+      this.teamStats.set(team, createInitialTeamStats(team))
+    }
+  }
+
+  private updateTeamStats(
+    team: string,
+    goalsFor: number,
+    goalsAgainst: number,
+    result: "W" | "D" | "L"
+  ): void {
+    const stats = this.teamStats.get(team)!
+    stats.played++
+    stats.goalsFor += goalsFor
+    stats.goalsAgainst += goalsAgainst
+    stats.goalDifference = stats.goalsFor - stats.goalsAgainst
+
+    switch (result) {
+      case "W":
+        stats.won++
+        stats.points += 3
+        break
+      case "D":
+        stats.drawn++
+        stats.points++
+        break
+      case "L":
+        stats.lost++
+        break
+    }
+
+    stats.form.push(result)
+    if (stats.form.length > MAX_FORM_ENTRIES) {
+      stats.form = stats.form.slice(-MAX_FORM_ENTRIES)
+    }
+  }
+
+  private processMatches(): void {
+    for (const match of this.matches) {
+      try {
+        matchSchema.parse(match)
+        
+        const { home_team, away_team, home_score, away_score } = match
+        this.ensureTeamExists(home_team)
+        this.ensureTeamExists(away_team)
+
+        if (home_score > away_score) {
+          this.updateTeamStats(home_team, home_score, away_score, "W")
+          this.updateTeamStats(away_team, away_score, home_score, "L")
+        } else if (home_score < away_score) {
+          this.updateTeamStats(home_team, home_score, away_score, "L")
+          this.updateTeamStats(away_team, away_score, home_score, "W")
+        } else {
+          this.updateTeamStats(home_team, home_score, away_score, "D")
+          this.updateTeamStats(away_team, away_score, home_score, "D")
+        }
+      } catch (error) {
+        console.error("Invalid match data:", error)
+        continue
+      }
+    }
+  }
+
+  private sortTeams<T extends { points: number; goalDifference: number; goalsFor: number }>(
+    teams: T[]
+  ): T[] {
+    return teams.sort((a, b) => {
+      if (b.points !== a.points) return b.points - a.points
+      if (b.goalDifference !== a.goalDifference) return b.goalDifference - a.goalDifference
+      if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor
+      return a.team.localeCompare(b.team) // Alphabetical as final tiebreaker
+    })
+  }
+
+  public getStandings(): StandingsEntry[] {
+    if (this.teamStats.size === 0) return []
+
+    const previousStandings = new Map(
+      Array.from(this.teamStats.entries()).map(([team, stats], index) => [
+        team,
+        { ...stats, position: index + 1 },
+      ])
+    )
+
+    const currentStandings = this.sortTeams(Array.from(this.teamStats.values())).map(
+      (stats, index) => ({
+        ...stats,
+        position: index + 1,
+        previousPosition: previousStandings.get(stats.team)?.position,
+      })
+    )
+
+    return currentStandings
+  }
+
+  public getTeamForms(): TeamForm[] {
+    if (this.teamStats.size === 0) return []
+
+    return this.sortTeams(
+      Array.from(this.teamStats.values()).map((stats) => ({
+        position: 0, // Will be set after sorting
+        team: stats.team,
+        played: stats.played,
+        goalsFor: stats.goalsFor,
+        goalsAgainst: stats.goalsAgainst,
+        points: stats.points,
+        form: [...stats.form],
+      }))
+    ).map((form, index) => ({
+      ...form,
+      position: index + 1,
+    }))
+  }
+}
+
+export function calculateStandings(matches: Match[]): StandingsEntry[] {
+  const calculator = new LeagueStatsCalculator(matches)
+  return calculator.getStandings()
+}
+
+export function calculateTeamForms(matches: Match[]): TeamForm[] {
+  const calculator = new LeagueStatsCalculator(matches)
+  return calculator.getTeamForms()
+}"
+
+
+//app.tsx
+"import { useState, useMemo, useCallback } from "react"
+import { Header } from "./components/Header"
+import { LeagueTable } from "./components/LeagueTable"
+import { LeagueDetails } from "./components/LeagueDetails"
+import { NewLeagueModal } from "./components/new-league-modal"
+import { leagues } from "./data/sampleData"
+import { calculateStandings } from "./lib/league-stats"
+import type { LeagueData, Match } from "./types"
+import { Card } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+
+interface AppState {
+  selectedLeagueId: string | null
+  leaguesList: LeagueData[]
+  matches: Match[]
+  searchTerm: string
+  isNewLeagueModalOpen: boolean
+}
+
+function App() {
+  const { toast } = useToast()
+  const [state, setState] = useState<AppState>({
+    selectedLeagueId: null,
+    leaguesList: leagues,
+    matches: [],
+    searchTerm: "",
+    isNewLeagueModalOpen: false,
+  })
+
+  const filteredLeagues = useMemo(() => {
+    const searchLower = state.searchTerm.toLowerCase()
+    return state.leaguesList.filter((league) =>
+      Object.values(league).some((value) => 
+        value?.toString().toLowerCase().includes(searchLower)
+      )
+    )
+  }, [state.leaguesList, state.searchTerm])
+
+  const currentStandings = useMemo(() => {
+    return calculateStandings(state.matches)
+  }, [state.matches])
+
+  const selectedLeague = useMemo(() => 
+    state.selectedLeagueId 
+      ? state.leaguesList.find(league => league.id === state.selectedLeagueId)
+      : null
+  , [state.selectedLeagueId, state.leaguesList])
+
+  const handleLeagueAction = useCallback((leagueId: string, action: "view" | "edit" | "complete" | "delete") => {
+    switch (action) {
+      case "view":
+      case "edit":
+        setState(prev => ({ ...prev, selectedLeagueId: leagueId }))
+        break
+      case "complete":
+        setState(prev => ({
+          ...prev,
+          leaguesList: prev.leaguesList.map(league => 
+            league.id === leagueId 
+              ? { 
+                  ...league, 
+                  status: "Completed",
+                  winner: currentStandings[0]?.team ?? "-",
+                  secondPlace: currentStandings[1]?.team ?? "-",
+                  thirdPlace: currentStandings[2]?.team ?? "-",
+                } 
+              : league
+          )
+        }))
+        toast({
+          title: "League Completed",
+          description: "The league has been marked as completed.",
+        })
+        break
+      case "delete":
+        setState(prev => ({
+          ...prev,
+          leaguesList: prev.leaguesList.filter(league => league.id !== leagueId)
+        }))
+        toast({
+          title: "League Deleted",
+          description: "The league has been permanently deleted.",
+          variant: "destructive",
+        })
+        break
+    }
+  }, [currentStandings, toast])
+
+  const handleCreateLeague = useCallback((leagueId: string) => {
+    const newLeague: LeagueData = {
+      id: leagueId,
+      season: `Virtuális Labdarúgás Liga Mód Retail ${leagueId}`,
+      winner: "-",
+      secondPlace: "-",
+      thirdPlace: "-",
+      status: "In Progress",
+    }
+    setState(prev => ({
+      ...prev,
+      leaguesList: [...prev.leaguesList, newLeague],
+      isNewLeagueModalOpen: false
+    }))
+    toast({
+      title: "League Created",
+      description: `New league "${leagueId}" has been created successfully.`,
+    })
+  }, [toast])
+
+  const handleUpdateLeague = useCallback((updatedLeague: LeagueData) => {
+    setState(prev => ({
+      ...prev,
+      leaguesList: prev.leaguesList.map(league => 
+        league.id === updatedLeague.id ? updatedLeague : league
+      )
+    }))
+    toast({
+      title: "League Updated",
+      description: "The league details have been updated successfully.",
+    })
+  }, [toast])
+
+  const handleUpdateMatches = useCallback((updatedMatches: Match[]) => {
+    setState(prev => ({ ...prev, matches: updatedMatches }))
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header currentSeason="2024" />
+
+      <main className="container mx-auto p-4 md:p-8">
+        <Card className="relative overflow-hidden backdrop-blur-xl bg-background/95 border-white/10">
+          {/* Gradient orbs */}
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000" />
+
+          <div className="relative p-6">
+            {selectedLeague ? (
+              <LeagueDetails
+                league={selectedLeague}
+                matches={state.matches}
+                onBack={() => setState(prev => ({ ...prev, selectedLeagueId: null }))}
+                onUpdateLeague={handleUpdateLeague}
+                onUpdateMatches={handleUpdateMatches}
+              />
+            ) : (
+              <LeagueTable
+                leagues={filteredLeagues}
+                onLeagueAction={handleLeagueAction}
+                onSearch={(term) => setState(prev => ({ ...prev, searchTerm: term }))}
+                onNewLeague={() => setState(prev => ({ ...prev, isNewLeagueModalOpen: true }))}
+              />
+            )}
+
+            {/* Glass effect borders */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          </div>
+        </Card>
+      </main>
+
+      <NewLeagueModal
+        isOpen={state.isNewLeagueModalOpen}
+        onClose={() => setState(prev => ({ ...prev, isNewLeagueModalOpen: false }))}
+        onCreateLeague={handleCreateLeague}
+      />
+    </div>
+  )
+}
+
+export default App"
+
+
+
+//types.ts
+
+"import { z } from "zod"
+
+/**
+ * Represents the status of a league
+ */
+export const LeagueStatus = {
+  IN_PROGRESS: "In Progress",
+  COMPLETED: "Completed",
+} as const
+
+export type LeagueStatus = typeof LeagueStatus[keyof typeof LeagueStatus]
+
+/**
+ * Schema for validating league data
+ */
+export const leagueDataSchema = z.object({
+  id: z.string().min(1, "League ID is required"),
+  name: z.string().min(1, "League name is required"),
+  season: z.string().min(1, "Season is required"),
+  winner: z.string(),
+  secondPlace: z.string(),
+  thirdPlace: z.string(),
+  status: z.enum([LeagueStatus.IN_PROGRESS, LeagueStatus.COMPLETED]),
+})
+
+/**
+ * Schema for validating match data
+ */
+export const matchSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Use YYYY-MM-DD"),
+  home_team: z.string().min(1, "Home team is required"),
+  away_team: z.string().min(1, "Away team is required"),
+  ht_home_score: z.number().int().min(0, "Half-time home score must be non-negative"),
+  ht_away_score: z.number().int().min(0, "Half-time away score must be non-negative"),
+  home_score: z.number().int().min(0, "Home score must be non-negative"),
+  away_score: z.number().int().min(0, "Away score must be non-negative"),
+  round: z.string().optional(),
+}).refine(
+  (data) => {
+    // Ensure final scores are not less than half-time scores
+    return data.home_score >= data.ht_home_score && 
+           data.away_score >= data.ht_away_score
+  },
+  {
+    message: "Final scores cannot be less than half-time scores",
+    path: ["home_score", "away_score"],
+  }
+)
+
+/**
+ * Schema for validating standings entry data
+ */
+export const standingsEntrySchema = z.object({
+  position: z.number().int().positive(),
+  team: z.string().min(1, "Team name is required"),
+  played: z.number().int().min(0),
+  won: z.number().int().min(0),
+  drawn: z.number().int().min(0),
+  lost: z.number().int().min(0),
+  goalsFor: z.number().int().min(0),
+  goalsAgainst: z.number().int().min(0),
+  goalDifference: z.number().int(),
+  points: z.number().int().min(0),
+  form: z.string().regex(/^[WDL]*$/, "Form must only contain W, D, or L"),
+}).refine(
+  (data) => {
+    // Validate that played matches equal sum of results
+    return data.played === data.won + data.drawn + data.lost
+  },
+  {
+    message: "Number of played matches must equal sum of won, drawn, and lost matches",
+    path: ["played"],
+  }
+).refine(
+  (data) => {
+    // Validate that points calculation is correct
+    return data.points === (data.won * 3) + data.drawn
+  },
+  {
+    message: "Points calculation is incorrect",
+    path: ["points"],
+  }
+)
+
+/**
+ * Schema for validating team form data
+ */
+export const teamFormSchema = z.object({
+  position: z.number().int().positive(),
+  team: z.string().min(1, "Team name is required"),
+  played: z.number().int().min(0),
+  goalsFor: z.number().int().min(0),
+  goalsAgainst: z.number().int().min(0),
+  points: z.number().int().min(0),
+  form: z.string().regex(/^[WDL]*$/, "Form must only contain W, D, or L"),
+})
+
+// Type definitions derived from schemas
+export type LeagueData = z.infer<typeof leagueDataSchema>
+export type Match = z.infer<typeof matchSchema>
+export type StandingsEntry = z.infer<typeof standingsEntrySchema>
+export type TeamForm = z.infer<typeof teamFormSchema>
+
+// Utility functions
+export const isValidMatch = (match: unknown): match is Match => {
+  return matchSchema.safeParse(match).success
+}
+
+export const isValidLeagueData = (data: unknown): data is LeagueData => {
+  return leagueDataSchema.safeParse(data).success
+}
+
+export const createEmptyLeagueData = (id: string, name: string): LeagueData => ({
+  id,
+  name,
+  season: new Date().getFullYear().toString(),
+  winner: "-",
+  secondPlace: "-",
+  thirdPlace: "-",
+  status: LeagueStatus.IN_PROGRESS,
+})
+
+export const getMatchResult = (match: Match): "HOME_WIN" | "AWAY_WIN" | "DRAW" => {
+  if (match.home_score > match.away_score) return "HOME_WIN"
+  if (match.home_score < match.away_score) return "AWAY_WIN"
+  return "DRAW"
+}
+
+export const calculatePoints = (won: number, drawn: number): number => {
+  return (won * 3) + drawn
+}
+
+export const formatForm = (form: string, maxLength = 5): string => {
+  return form.slice(-maxLength)
+}"
